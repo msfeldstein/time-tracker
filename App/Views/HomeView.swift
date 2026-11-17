@@ -2,6 +2,11 @@ import SwiftData
 import SwiftUI
 import TimeTrackerCore
 
+enum HomeRoute: Hashable {
+    case today
+    case settings
+}
+
 struct HomeView: View {
     @Environment(VoiceCaptureController.self) private var voice
     @Query(
@@ -10,10 +15,10 @@ struct HomeView: View {
         order: .reverse
     )
     private var running: [TimeEntry]
-    @State private var showingToday = false
+    @State private var path: [HomeRoute] = HomeView.initialPath()
 
     var body: some View {
-        NavigationStack {
+        NavigationStack(path: $path) {
             VStack(spacing: 20) {
                 StatusPanel(phase: voice.phase, transcript: voice.transcript)
                     .frame(maxWidth: .infinity, minHeight: 110, alignment: .center)
@@ -26,7 +31,7 @@ struct HomeView: View {
                     .frame(maxHeight: .infinity, alignment: .top)
 
                 Button {
-                    showingToday = true
+                    path.append(.today)
                 } label: {
                     Label("Today", systemImage: "list.bullet.rectangle")
                         .font(.title3.weight(.semibold))
@@ -39,21 +44,15 @@ struct HomeView: View {
             .padding(.bottom, 12)
             .navigationTitle("Time Tracker")
             .navigationBarTitleDisplayMode(.inline)
-            .navigationDestination(isPresented: $showingToday) {
-                TodayView()
-            }
-            .onAppear {
-                #if DEBUG
-                if ProcessInfo.processInfo.arguments.contains("-TTOpenToday") {
-                    showingToday = true
+            .navigationDestination(for: HomeRoute.self) { route in
+                switch route {
+                case .today: TodayView()
+                case .settings: SettingsView()
                 }
-                #endif
             }
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
-                    NavigationLink {
-                        SettingsView()
-                    } label: {
+                    NavigationLink(value: HomeRoute.settings) {
                         Image(systemName: "gearshape")
                             .accessibilityLabel("Settings")
                     }
@@ -68,6 +67,18 @@ struct HomeView: View {
                 }
             }
         }
+    }
+}
+
+extension HomeView {
+    /// Debug launch arguments used by CI screenshots: `-TTOpenToday`, `-TTOpenSettings`.
+    nonisolated static func initialPath() -> [HomeRoute] {
+        #if DEBUG
+        let arguments = ProcessInfo.processInfo.arguments
+        if arguments.contains("-TTOpenToday") { return [.today] }
+        if arguments.contains("-TTOpenSettings") { return [.settings] }
+        #endif
+        return []
     }
 }
 

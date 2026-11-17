@@ -69,17 +69,20 @@ jobs:
           APP=build/DerivedData/Build/Products/Debug-iphonesimulator/TimeTracker.app
           BUNDLE_ID=$(/usr/libexec/PlistBuddy -c "Print CFBundleIdentifier" "$APP/Info.plist")
           xcrun simctl install "$SHOT_UDID" "$APP"
+          shot() { sleep "$2"; xcrun simctl io "$SHOT_UDID" screenshot "screenshots/$1.png"; }
           xcrun simctl launch "$SHOT_UDID" "$BUNDLE_ID" -TTDemoData
-          sleep 8
-          xcrun simctl io "$SHOT_UDID" screenshot screenshots/1-home.png
-          xcrun simctl terminate "$SHOT_UDID" "$BUNDLE_ID"
+          shot 1-home 12
+          xcrun simctl terminate "$SHOT_UDID" "$BUNDLE_ID" || true
           xcrun simctl launch "$SHOT_UDID" "$BUNDLE_ID" -TTOpenToday
-          sleep 6
-          xcrun simctl io "$SHOT_UDID" screenshot screenshots/2-today.png
+          shot 2-today 12
+          xcrun simctl terminate "$SHOT_UDID" "$BUNDLE_ID" || true
+          xcrun simctl launch "$SHOT_UDID" "$BUNDLE_ID" -TTOpenSettings
+          shot 3-settings 10
+          xcrun simctl terminate "$SHOT_UDID" "$BUNDLE_ID" || true
           xcrun simctl openurl "$SHOT_UDID" timetracker://listen
-          sleep 5
-          xcrun simctl io "$SHOT_UDID" screenshot screenshots/3-listen-url.png
-          xcrun simctl spawn "$SHOT_UDID" log show --last 2m --predicate 'subsystem == "TimeTracker"' --style compact > screenshots/app-log.txt || true
+          shot 4-listen-url 12
+          xcrun simctl spawn "$SHOT_UDID" log show --last 10m --predicate 'process == "TimeTracker"' --style compact > screenshots/app-log.txt || true
+          cp ~/Library/Logs/DiagnosticReports/TimeTracker* screenshots/ 2>/dev/null || true
           xcrun simctl shutdown "$SHOT_UDID" || true
       - name: Run unit tests on a simulator
         run: |
