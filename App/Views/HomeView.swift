@@ -10,6 +10,7 @@ struct HomeView: View {
         order: .reverse
     )
     private var running: [TimeEntry]
+    @State private var showingToday = false
 
     var body: some View {
         NavigationStack {
@@ -24,8 +25,8 @@ struct HomeView: View {
                 RunningList(entries: running)
                     .frame(maxHeight: .infinity, alignment: .top)
 
-                NavigationLink {
-                    TodayView()
+                Button {
+                    showingToday = true
                 } label: {
                     Label("Today", systemImage: "list.bullet.rectangle")
                         .font(.title3.weight(.semibold))
@@ -38,6 +39,16 @@ struct HomeView: View {
             .padding(.bottom, 12)
             .navigationTitle("Time Tracker")
             .navigationBarTitleDisplayMode(.inline)
+            .navigationDestination(isPresented: $showingToday) {
+                TodayView()
+            }
+            .onAppear {
+                #if DEBUG
+                if ProcessInfo.processInfo.arguments.contains("-TTOpenToday") {
+                    showingToday = true
+                }
+                #endif
+            }
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     NavigationLink {

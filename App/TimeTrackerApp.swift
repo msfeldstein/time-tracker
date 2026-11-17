@@ -47,6 +47,11 @@ struct RootView: View {
                     if !didLaunch {
                         didLaunch = true
                         await EntryService.shared.reprocessPendingCaptures()
+                        #if DEBUG
+                        if ProcessInfo.processInfo.arguments.contains("-TTDemoData") {
+                            await EntryService.shared.seedDemoDataIfEmpty()
+                        }
+                        #endif
                     }
                     await EntryService.shared.refreshSurfaces()
                 }

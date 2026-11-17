@@ -193,6 +193,27 @@ final class EntryService {
         await refreshSurfaces()
     }
 
+    #if DEBUG
+    /// Sample data for screenshots and trying the UI. Launch with `-TTDemoData`; only runs on an empty store.
+    func seedDemoDataIfEmpty() async {
+        guard ((try? context.fetchCount(FetchDescriptor<TimeEntry>())) ?? 0) == 0 else { return }
+        let now = Date()
+        func minutesAgo(_ minutes: Double) -> Date { now.addingTimeInterval(-minutes * 60) }
+        let samples: [TimeEntry] = [
+            TimeEntry(kind: .activity, name: "Vacuuming", startedAt: minutesAgo(215), rawTranscript: "starting vacuuming", source: .voice),
+            TimeEntry(kind: .activity, name: "Cooking dinner", startedAt: minutesAgo(150), endedAt: minutesAgo(105), rawTranscript: "starting cooking dinner", source: .voice),
+            TimeEntry(kind: .note, name: "Remember to buy soap", startedAt: minutesAgo(90), endedAt: minutesAgo(90), rawTranscript: "Remember to buy soap", source: .voice),
+            TimeEntry(kind: .activity, name: "Laundry", startedAt: minutesAgo(40), rawTranscript: "I'm doing laundry", source: .siri),
+            TimeEntry(kind: .activity, name: "Dishes", startedAt: minutesAgo(12), rawTranscript: "starting the dishes", source: .voice),
+        ]
+        for sample in samples {
+            context.insert(sample)
+        }
+        save()
+        await refreshSurfaces()
+    }
+    #endif
+
     // MARK: - Side effects
 
     func refreshSurfaces() async {
