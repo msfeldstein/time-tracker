@@ -11,7 +11,7 @@ struct SettingsView: View {
                 tip("mic.fill", "Tap the big microphone.")
                 tip("lock.fill", "Add the Time Tracker widget to your Lock Screen and tap it.")
                 tip("switch.2", "Add the \u{201C}Log Time\u{201D} control to Control Center or the Lock Screen.")
-                tip("hand.tap.fill", "Back Tap: Settings \u{203A} Accessibility \u{203A} Touch \u{203A} Back Tap \u{203A} Double Tap \u{203A} \u{201C}Log by Voice\u{201D}.")
+                tip("hand.tap.fill", "Back Tap: make a \u{201C}Log Time\u{201D} shortcut with the \u{201C}Log by Voice\u{201D} action, then pick it in Settings \u{203A} Accessibility \u{203A} Touch \u{203A} Back Tap \u{203A} Double Tap.")
                 tip("waveform", "Say \u{201C}Hey Siri, log time in Time Tracker\u{201D}.")
             }
 
