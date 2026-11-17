@@ -3,7 +3,7 @@ import TimeTrackerCore
 
 struct SettingsView: View {
     @State private var keyInput = ""
-    @State private var hasKey = AnthropicKey.load() != nil
+    @State private var keySource = AnthropicKey.source
     @State private var keyError: String?
     @State private var aiEnabled = AISettings.isEnabled
     @State private var testing = false
@@ -39,9 +39,18 @@ struct SettingsView: View {
                     .font(.footnote)
                     .foregroundStyle(.secondary)
 
-                if hasKey {
-                    Label("Key saved on this iPhone", systemImage: "checkmark.seal.fill")
+                switch keySource {
+                case .settings:
+                    Label("Using the key you entered", systemImage: "checkmark.seal.fill")
                         .foregroundStyle(.green)
+                case .builtIn:
+                    Label("Using the key built into this app", systemImage: "checkmark.seal.fill")
+                        .foregroundStyle(.green)
+                case .missing:
+                    EmptyView()
+                }
+
+                if keySource != .missing {
                     Button {
                         testKey()
                     } label: {
@@ -56,41 +65,46 @@ struct SettingsView: View {
                         Label(testResult.message, systemImage: testResult.ok ? "checkmark.circle.fill" : "xmark.circle.fill")
                             .foregroundStyle(testResult.ok ? .green : .red)
                     }
-                    Button("Remove key", role: .destructive) {
+                }
+
+                if keySource == .settings {
+                    Button(AnthropicKey.bundledKey() == nil ? "Remove key" : "Remove key and use the built-in one", role: .destructive) {
                         AnthropicKey.remove()
-                        hasKey = false
+                        keySource = AnthropicKey.source
                         testResult = nil
                         AIWorker.shared.settingsChanged()
                     }
                 } else {
-                    SecureField("Anthropic API key", text: $keyInput)
+                    SecureField(keySource == .builtIn ? "Use a different key (optional)" : "Anthropic API key", text: $keyInput)
                         .textInputAutocapitalization(.never)
                         .autocorrectionDisabled()
-                    Button("Save key") {
-                        do {
-                            try AnthropicKey.save(keyInput)
-                            keyInput = ""
-                            keyError = nil
-                            hasKey = AnthropicKey.load() != nil
-                            AIWorker.shared.settingsChanged()
-                            testKey()
-                        } catch {
-                            keyError = "Couldn\u{2019}t save the key. Please try again."
+                    if !keyInput.trimmingCharacters(in: .whitespaces).isEmpty || keySource == .missing {
+                        Button("Save key") {
+                            do {
+                                try AnthropicKey.save(keyInput)
+                                keyInput = ""
+                                keyError = nil
+                                keySource = AnthropicKey.source
+                                AIWorker.shared.settingsChanged()
+                                testKey()
+                            } catch {
+                                keyError = "Couldn\u{2019}t save the key. Please try again."
+                            }
                         }
+                        .disabled(keyInput.trimmingCharacters(in: .whitespaces).isEmpty)
                     }
-                    .disabled(keyInput.trimmingCharacters(in: .whitespaces).isEmpty)
                     if let keyError {
                         Text(keyError).foregroundStyle(.red)
                     }
                 }
 
-                if aiEnabled && hasKey {
+                if aiEnabled && keySource != .missing {
                     LabeledContent("Status", value: AIWorker.shared.status.description)
                 }
             } header: {
                 Text("Smart features")
             } footer: {
-                Text("Optional. Claude Haiku sorts activities into categories, makes sense of unclear voice notes, suggests when a forgotten timer probably ended, and writes your summaries. Everything still works offline or without a key; AI work waits and retries later. The key is stored only in this iPhone\u{2019}s Keychain.")
+                Text("Optional. Claude Haiku sorts activities into categories, makes sense of unclear voice notes, suggests when a forgotten timer probably ended, and writes your summaries. Everything still works offline or without a key; AI work waits and retries later. A key you enter is stored only in this iPhone\u{2019}s Keychain and takes priority over a built-in one.")
             }
 
             Section("Storage") {

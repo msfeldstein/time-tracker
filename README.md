@@ -114,7 +114,7 @@ This produces:
 - Widget extension: `com.michaelfeldstein.timetracker.widgets`
 - App Group: `group.com.michaelfeldstein.timetracker`
 
-You can also edit `Config/Base.xcconfig` directly. `Local.xcconfig` just keeps your personal values out of git.
+You can also edit `Config/Base.xcconfig` directly for the bundle ID and team, but **never for `ANTHROPIC_API_KEY`**. `Local.xcconfig` keeps personal values out of git; see [Option A](#option-a-build-the-key-into-the-app-alexa-doesnt-paste-anything) for the optional built-in key.
 
 **Finding the team ID:** in Xcode, go to **Settings › Accounts**, click **+**, and sign in with your Apple ID. A "(Personal Team)" entry appears. The easiest way to set the team is to leave `DEVELOPMENT_TEAM` blank and, in Xcode, select the **TimeTracker** target, then **Signing & Capabilities**, then **Team: <Your Name> (Personal Team)**. Do the same for the **TimeTrackerWidgets** target. Selections made in the UI are lost if you later regenerate the project. To make it stick, copy the 10-character ID from **Build Settings › Development Team** into `Local.xcconfig`.
 
@@ -195,11 +195,38 @@ The same three actions appear in the Shortcuts app under Time Tracker. "Log Time
 
 ## Turn on the AI features (optional)
 
-1. On a computer, sign in at [console.anthropic.com](https://console.anthropic.com), open **API Keys**, and create a key. Add a small amount of credit; Haiku costs a fraction of a cent per request.
-2. On her iPhone: **Time Tracker › Track tab › gear icon › Smart features**. Paste the key, tap **Save key**, then **Test key**. It should say "The key works."
-3. Leave **Use AI (Claude Haiku)** on. Turn it off at any time; the app goes back to on-device only.
+First, on a computer, sign in at [console.anthropic.com](https://console.anthropic.com), open **API Keys**, and create a key. Add a small amount of credit; Haiku costs a fraction of a cent per request. Then use either option below.
 
-**Never put the key in the code or commit it. This repository is public.** The key lives only in the iPhone's Keychain (this device only, not synced) and is sent only to `api.anthropic.com`.
+**Never put the key in committed code or config. This repository is public.**
+
+### Option A: build the key into the app (Alexa doesn't paste anything)
+
+1. In `Config/Local.xcconfig` (git-ignored; copy it from `Config/Local.xcconfig.example` if you haven't), add:
+
+   ```
+   ANTHROPIC_API_KEY = sk-ant-api03-...your key...
+   ```
+
+   - No quotes, and nothing else on the line.
+   - xcconfig treats `//` as the start of a comment and `$(...)` as a variable reference, so a value containing either would be cut short or expanded. Anthropic keys only use letters, digits, `-` and `_`, which pass through unchanged (CI checks this with a fake key).
+   - `Config/Base.xcconfig` defines `ANTHROPIC_API_KEY` as empty. Leave it that way.
+2. Run `sh scripts/check_secrets.sh`. It confirms `Local.xcconfig` is ignored and untracked, the committed default is empty, and no tracked or staged file contains something that looks like a key. CI runs it on every push. To run it before every commit too:
+
+   ```bash
+   ln -s ../../scripts/check_secrets.sh .git/hooks/pre-commit
+   ```
+
+3. Build and run (⌘R). In the app, **Settings › Smart features** shows "Using the key built into this app". Tap **Test key**.
+
+How it works: the setting reaches the **app's** Info.plist as `TTBundledAnthropicKey`; the widget extension's Info.plist doesn't get it. At runtime, a key saved in Settings (Keychain) always wins, and the built-in key is the fallback. The built-in key is read from the app bundle each time and never copied into the Keychain. To take it away, clear the line in `Local.xcconfig` and rebuild.
+
+The built-in key ships inside the app bundle installed on her phone, as plain text in Info.plist. That's fine for a personal sideloaded app. Don't share the built `.app` or `.ipa`. Use a key you can revoke, and set a monthly spend limit in the Anthropic console.
+
+### Option B: paste a key on the phone
+
+On her iPhone, go to **Time Tracker › Track tab › gear icon › Smart features**. Paste the key, tap **Save key**, then **Test key**; it should say "The key works." A pasted key lives only in the iPhone's Keychain (this device only, not synced) and **overrides a built-in key**. **Remove key** returns to the built-in key if there is one.
+
+Either way, leave **Use AI (Claude Haiku)** on. Turn it off at any time to go back to on-device only. The key is only ever sent to `api.anthropic.com`.
 
 ## Free Apple ID limitations
 
@@ -276,6 +303,7 @@ Packages/TimeTrackerCore/   Platform-independent parser, matcher, resolver, summ
 
 - **Core tests (any Mac, or Linux):** `cd Packages/TimeTrackerCore && swift test`. These cover the parser, matcher and resolver, plus the AI layer: prompt builders, schema strictness, tolerant response parsing, request headers and body, and error mapping. AI tests use a mocked HTTP transport and never call the network or need a key.
 - **In Xcode:** **⌘U** on the `TimeTracker` scheme runs the package's own `TimeTrackerCoreTests` target in an iOS Simulator. You can also open `Packages/TimeTrackerCore/Package.swift` on its own and test the `TimeTrackerCore` scheme. The test files belong only to the package. Don't add them to an app-project target too: Xcode 27 refuses to open a project where a file is in more than one group.
+- **Secrets check:** `sh scripts/check_secrets.sh` fails if an Anthropic key could be committed. CI runs it; you can install it as a pre-commit hook.
 - **CI:** `.github/workflows/ios.yml` runs the package tests and builds the app and widget for the iOS Simulator with Xcode 26 on GitHub's macOS runners, unsigned.
 - The scheme builds both the app and the widget extension. To debug the widget or Live Activity, run the app, then use **Debug › Attach to Process by PID or Name › TimeTrackerWidgets**.
 

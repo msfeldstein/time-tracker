@@ -17,6 +17,8 @@ jobs:
       - uses: actions/checkout@v4
       - name: Swift version
         run: swift --version
+      - name: No Anthropic key in the repository
+        run: sh scripts/check_secrets.sh
       - name: Run TimeTrackerCore tests
         working-directory: Packages/TimeTrackerCore
         run: swift test
@@ -50,6 +52,10 @@ jobs:
             CODE_SIGNING_ALLOWED=NO \
             | tee build.log | grep -E "error:|warning:|BUILD (SUCCEEDED|FAILED)" || true
           grep -q "BUILD SUCCEEDED" build.log
+      - name: Default build embeds no Anthropic key
+        run: |
+          APP=build/DerivedData/Build/Products/Debug-iphonesimulator/TimeTracker.app
+          test -z "$(/usr/libexec/PlistBuddy -c 'Print TTBundledAnthropicKey' "$APP/Info.plist")"
       - name: Pick an iPhone simulator
         run: |
           UDID=$(xcrun simctl list devices available -j | python3 -c '
@@ -109,6 +115,26 @@ jobs:
             CODE_SIGNING_ALLOWED=NO \
             | tee test.log | grep -E "error:|Test Suite|Executed|TEST (SUCCEEDED|FAILED)" || true
           grep -q "TEST SUCCEEDED" test.log
+      - name: Built-in key passes through Local.xcconfig intact (fake key)
+        run: |
+          set -o pipefail
+          FAKE="sk-ant-""fake_key-ci_01-Ab"
+          printf 'ANTHROPIC_API_KEY = %s\n' "$FAKE" > Config/Local.xcconfig
+          xcodebuild build \
+            -project TimeTracker.xcodeproj \
+            -scheme TimeTracker \
+            -destination 'generic/platform=iOS Simulator' \
+            -derivedDataPath build/DerivedData \
+            CODE_SIGNING_ALLOWED=NO \
+            -quiet
+          APP=build/DerivedData/Build/Products/Debug-iphonesimulator/TimeTracker.app
+          GOT=$(/usr/libexec/PlistBuddy -c 'Print TTBundledAnthropicKey' "$APP/Info.plist")
+          rm Config/Local.xcconfig
+          [ "$GOT" = "$FAKE" ] || { echo "Expected the fake key in the app Info.plist, got '$GOT'"; exit 1; }
+          if /usr/libexec/PlistBuddy -c 'Print TTBundledAnthropicKey' "$APP/PlugIns/TimeTrackerWidgets.appex/Info.plist" 2>/dev/null; then
+            echo "The widget extension must not embed the key"; exit 1
+          fi
+          echo "Built-in key reached the app Info.plist unchanged and is absent from the widget."
       - name: Check the committed project matches project.yml
         run: |
           ./scripts/generate-project.sh

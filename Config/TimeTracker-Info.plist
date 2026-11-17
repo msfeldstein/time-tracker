@@ -41,6 +41,8 @@
 	<string>Time Tracker turns what you say into text on your iPhone. Nothing is sent to Apple or anyone else.</string>
 	<key>NSSupportsLiveActivities</key>
 	<true/>
+	<key>TTBundledAnthropicKey</key>
+	<string>$(ANTHROPIC_API_KEY)</string>
 	<key>TTAppGroupID</key>
 	<string>$(APP_GROUP_ID)</string>
 	<key>UIApplicationSceneManifest</key>

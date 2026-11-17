@@ -9,7 +9,8 @@ build/
 *.dSYM.zip
 *.dSYM
 
-# Local signing overrides (team ID, personal bundle ID)
+# Local overrides: team ID, personal bundle ID, optional built-in ANTHROPIC_API_KEY.
+# scripts/check_secrets.sh (run in CI) fails if this stops being ignored.
 Config/Local.xcconfig
 
 # Secrets must never be committed (this repo is public)
