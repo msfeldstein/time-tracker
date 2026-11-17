@@ -10,10 +10,13 @@ struct EditEntryView: View {
     @State private var isRunning: Bool
     @State private var endedAt: Date
     @State private var confirmingDelete = false
+    @State private var category: String
+    @State private var knownCategories: [String] = []
 
     init(entry: TimeEntry) {
         self.entry = entry
         _name = State(initialValue: entry.name)
+        _category = State(initialValue: entry.category ?? "")
         _startedAt = State(initialValue: entry.startedAt)
         _isRunning = State(initialValue: entry.isRunning)
         _endedAt = State(initialValue: entry.endedAt ?? Date())
@@ -44,6 +47,21 @@ struct EditEntryView: View {
                         }
                     }
 
+                    Section {
+                        Picker("Category", selection: $category) {
+                            Text("Sort automatically").tag("")
+                            ForEach(categoryChoices, id: \.self) { Text($0).tag($0) }
+                        }
+                    } footer: {
+                        Text("Picking one here also teaches the app for next time.")
+                    }
+
+                    if entry.isRunning, let suggestion = entry.activeSuggestion {
+                        Section("Suggested fix") {
+                            SuggestionFix(entry: entry, suggestion: suggestion)
+                        }
+                    }
+
                     if entry.isRunning {
                         Section {
                             quickStop("Stopped just now", end: Date())
@@ -59,6 +77,24 @@ struct EditEntryView: View {
                     Section("What you said") {
                         Text("\u{201C}\(entry.rawTranscript)\u{201D}")
                             .foregroundStyle(.secondary)
+                    }
+                }
+
+                if let interpretationID = entry.interpretationID,
+                   let interpretation = EntryService.shared.interpretation(id: interpretationID),
+                   interpretation.revertedAt == nil {
+                    Section {
+                        Label(interpretation.summary, systemImage: "sparkles")
+                        Button("Undo AI interpretation") {
+                            Task {
+                                await EntryService.shared.revertInterpretation(id: interpretationID)
+                                dismiss()
+                            }
+                        }
+                    } header: {
+                        Text("Understood by AI")
+                    } footer: {
+                        Text("Undo puts things back exactly as the app first understood them. Nothing you said is lost.")
                     }
                 }
 
@@ -80,6 +116,9 @@ struct EditEntryView: View {
                         .disabled(name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
                 }
             }
+            .task {
+                knownCategories = EntryService.shared.knownCategories()
+            }
             .confirmationDialog("Delete this entry?", isPresented: $confirmingDelete, titleVisibility: .visible) {
                 Button("Delete", role: .destructive) {
                     Task {
@@ -99,8 +138,23 @@ struct EditEntryView: View {
         }
     }
 
+    private var categoryChoices: [String] {
+        var choices = knownCategories
+        if !category.isEmpty, !choices.contains(category) { choices.append(category) }
+        return choices
+    }
+
     private func save() {
-        entry.name = name.trimmingCharacters(in: .whitespacesAndNewlines)
+        let newName = name.trimmingCharacters(in: .whitespacesAndNewlines)
+        let renamed = newName != entry.name
+        let chosenCategory = category
+        let categoryChanged = chosenCategory != (entry.category ?? "")
+        entry.name = newName
+        // A renamed activity gets re-sorted unless she picked its category herself.
+        if renamed, !categoryChanged, entry.categorySource != .user {
+            entry.category = nil
+            entry.categorySourceRaw = nil
+        }
         entry.startedAt = startedAt
         if isNote {
             entry.endedAt = startedAt
@@ -108,6 +162,14 @@ struct EditEntryView: View {
             entry.endedAt = isRunning ? nil : max(endedAt, startedAt)
         }
         Task {
+            if categoryChanged {
+                if chosenCategory.isEmpty {
+                    entry.category = nil
+                    entry.categorySourceRaw = nil
+                } else {
+                    await EntryService.shared.setCategory(chosenCategory, for: entry)
+                }
+            }
             await EntryService.shared.commitEdits()
             dismiss()
         }

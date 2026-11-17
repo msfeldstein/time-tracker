@@ -3,21 +3,28 @@ import SwiftUI
 import TimeTrackerCore
 
 struct TodayView: View {
-    @Query private var entries: [TimeEntry]
+    @Query private var allEntries: [TimeEntry]
+    @Query(filter: #Predicate<CaptureRecord> { $0.aiStatusRaw == "pending" }) private var pendingCaptures: [CaptureRecord]
     @State private var editing: TimeEntry?
     @State private var addingEntry = false
 
     init(day: Date = Date()) {
         let start = Calendar.current.startOfDay(for: day)
         // Today's entries plus anything still running from earlier (likely forgotten).
-        _entries = Query(
+        _allEntries = Query(
             filter: #Predicate<TimeEntry> { $0.startedAt >= start || $0.endedAt == nil },
             sort: \TimeEntry.startedAt,
             order: .reverse
         )
     }
 
+    /// Notes replaced by an AI interpretation stay stored but hidden until "Undo".
+    private var entries: [TimeEntry] {
+        allEntries.filter { $0.supersededByInterpretationID == nil }
+    }
+
     var body: some View {
+        let pendingIDs = Set(pendingCaptures.map(\.id))
         TimelineView(.periodic(from: .now, by: 30)) { context in
             List {
                 Section {
@@ -33,12 +40,12 @@ struct TodayView: View {
                 } else {
                     Section {
                         ForEach(entries) { entry in
-                            Button {
-                                editing = entry
-                            } label: {
-                                EntryRow(entry: entry, now: context.date)
-                            }
-                            .buttonStyle(.plain)
+                            EntryRow(
+                                entry: entry,
+                                now: context.date,
+                                isAskingAI: entry.captureID.map { pendingIDs.contains($0) } ?? false
+                            )
+                            .onTapGesture { editing = entry }
                             .swipeActions(edge: .trailing, allowsFullSwipe: false) {
                                 Button(role: .destructive) {
                                     Task { await EntryService.shared.delete(entry) }
@@ -108,9 +115,12 @@ private struct TotalRow: View {
 struct EntryRow: View {
     let entry: TimeEntry
     let now: Date
+    var isAskingAI = false
 
     private var forgotten: Bool {
-        entry.kind == .activity && DurationFormatting.isProbablyForgotten(startedAt: entry.startedAt, endedAt: entry.endedAt, now: now)
+        guard entry.kind == .activity else { return false }
+        return entry.activeSuggestion != nil
+            || DurationFormatting.isProbablyForgotten(startedAt: entry.startedAt, endedAt: entry.endedAt, now: now)
     }
 
     var body: some View {
@@ -124,13 +134,30 @@ struct EntryRow: View {
                 Text(entry.name)
                     .font(entry.kind == .note ? .body.italic() : .headline)
                     .lineLimit(entry.kind == .note ? 4 : 2)
-                Text(timeText)
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                HStack(spacing: 6) {
+                    Text(timeText)
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                    if let category = entry.category {
+                        CategoryChip(name: category)
+                    }
+                }
+                if entry.interpretationID != nil {
+                    Label("Understood by AI \u{00B7} tap to undo", systemImage: "sparkles")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                } else if isAskingAI {
+                    Label("Asking AI to make sense of this\u{2026}", systemImage: "sparkles")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                }
                 if forgotten {
                     Label(entry.isRunning ? "Forgot to stop?" : "Over 3 hours \u{2013} check the end time?", systemImage: "exclamationmark.triangle.fill")
                         .font(.subheadline.weight(.semibold))
                         .foregroundStyle(.orange)
+                }
+                if let suggestion = entry.activeSuggestion {
+                    SuggestionFix(entry: entry, suggestion: suggestion)
                 }
             }
 
@@ -177,5 +204,50 @@ struct EntryRow: View {
             }
             return "Since \(start)"
         }
+    }
+}
+
+struct CategoryChip: View {
+    let name: String
+
+    var body: some View {
+        Text(name)
+            .font(.caption.weight(.semibold))
+            .padding(.horizontal, 8)
+            .padding(.vertical, 2)
+            .background(Color.accentColor.opacity(0.15), in: Capsule())
+            .foregroundStyle(Color.accentColor)
+            .accessibilityLabel("Category \(name)")
+    }
+}
+
+/// The one-tap fix for a forgotten timer. Suggestions are never applied automatically.
+struct SuggestionFix: View {
+    let entry: TimeEntry
+    let suggestion: Date
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text("Probably ended around \(suggestion.formatted(date: .omitted, time: .shortened))")
+                .font(.subheadline.weight(.semibold))
+            if let reason = entry.suggestionReason {
+                Label(reason, systemImage: entry.suggestionSource == .ai ? "sparkles" : "clock.arrow.circlepath")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+            }
+            Button {
+                let id = entry.id
+                Task { await EntryService.shared.useSuggestion(entryID: id) }
+            } label: {
+                Label("Use suggestion", systemImage: "checkmark")
+                    .font(.subheadline.weight(.semibold))
+            }
+            .buttonStyle(.borderedProminent)
+            .buttonBorderShape(.capsule)
+            .tint(.orange)
+            .accessibilityHint("Stops \(entry.name) at \(suggestion.formatted(date: .omitted, time: .shortened))")
+        }
+        .padding(10)
+        .background(Color.orange.opacity(0.1), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
     }
 }

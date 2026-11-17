@@ -8,14 +8,16 @@
 
 /* Begin PBXBuildFile section */
 		02F7E843642927E63EDB8D64 /* EntryService.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECAEC97223FCB911549679F8 /* EntryService.swift */; };
-		0994D02695E668DBB28C09AB /* ClaudeHaikuService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04554397921E2BEA93D8E856 /* ClaudeHaikuService.swift */; };
 		2B4BF70FEFF83ECFD60CA439 /* TimeTrackerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09442919A8CC6D4860719FE8 /* TimeTrackerApp.swift */; };
 		3E15F3923C9ED19AFCB452BA /* TimerActivityAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = C603ED5DC8732D646DF764ED /* TimerActivityAttributes.swift */; };
 		45258BEA6D572D475CFF128E /* ActivityIntents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C97F9312153EB910E802CBE /* ActivityIntents.swift */; };
 		507775A76542B53BC3BE3F62 /* TodayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DF547B9F95F0C8C87595E55 /* TodayView.swift */; };
+		53463BA19F4EAAAE87C14982 /* AIWorker.swift in Sources */ = {isa = PBXBuildFile; fileRef = A17A68CC514739A3A3BC734F /* AIWorker.swift */; };
 		54DD7DA7D14D77DD6DB812C1 /* SpeechAnalyzerEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1766AB95D84FF346E85EB137 /* SpeechAnalyzerEngine.swift */; };
 		59973C3454E65B639E189B6C /* TimeTrackerWidgetBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAD342751290AF18EA186A4A /* TimeTrackerWidgetBundle.swift */; };
+		63DDBFE2263794A6F3C7BE3B /* SummaryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8CABC4D99320C042D2E6C19 /* SummaryView.swift */; };
 		6FA41586ED459A0329027BB0 /* TimeTrackerWidgets.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 11C1F68B15263FB9A7D27BE9 /* TimeTrackerWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		726E5D2615E84FDF5A9C7F42 /* KeychainStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DDA2D7D0D0B8D4F746FD46E /* KeychainStore.swift */; };
 		73DEBA40981C3A8D91B147F0 /* LiveActivityManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87E590C55DE1B599FB9B5309 /* LiveActivityManager.swift */; };
 		7556E0AF69201036E24D276A /* EntryService.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECAEC97223FCB911549679F8 /* EntryService.swift */; };
 		77B8C9A6FD34D2753DEFE7F0 /* TimeTrackerCore in Frameworks */ = {isa = PBXBuildFile; productRef = 87F3937957643873D88E4BC2 /* TimeTrackerCore */; };
@@ -26,22 +28,25 @@
 		91F0FAC362C7F3A84D31013F /* SharedStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 684702EAFD7862185FCF1BCB /* SharedStore.swift */; };
 		977DFFC9F420B0DA9CEA2915 /* TimeTrackerShortcuts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0621CB170A692213E12788EA /* TimeTrackerShortcuts.swift */; };
 		98ECB27448252D38BE27C1BD /* RunningActivityWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE1A593BA80395F97303B18 /* RunningActivityWidget.swift */; };
+		9D033A47F6BDEEAE18C8C172 /* AISettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 971D9B41DA1188E43A115B57 /* AISettings.swift */; };
 		9E09860D44713C170D21EF99 /* MicButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DA017B8BD6D99416ABCF95D /* MicButton.swift */; };
 		9F8E3BDF90089CE9C05130C8 /* EditEntryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09ACD334BF3A3B29E2937FC0 /* EditEntryView.swift */; };
+		A4A256617BDE80CB13B9EBBD /* EntryService+AI.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB32533D2C3EE5B8D6F6DFE8 /* EntryService+AI.swift */; };
 		AB85F813070A6275F5408270 /* TranscriptionEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D30EC636CA4ADBD10DC1DE2 /* TranscriptionEngine.swift */; };
 		AE3AE395B42A80DAC49F6C3B /* ListenRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D1310FCE4F773A4E91672F6 /* ListenRequest.swift */; };
 		B6515DF3E1F5C881D16CC6F5 /* SharedIntents.swift in Sources */ = {isa = PBXBuildFile; fileRef = E443C2308C4748F2F6168385 /* SharedIntents.swift */; };
 		B8E6BC4AEA8995768AFBCEC6 /* LegacySpeechEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = E855BD506B4E538B0F671C49 /* LegacySpeechEngine.swift */; };
-		BDD66BEF266DE046B44339A3 /* KeychainStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03FEA3B3F8DAF8B1F101CA06 /* KeychainStore.swift */; };
 		BDDE579211FCB5F7E4B4CAAD /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DB495902D3E14089A5352E07 /* Assets.xcassets */; };
 		BE2AD357FD510782F32FE5C8 /* LiveActivityManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87E590C55DE1B599FB9B5309 /* LiveActivityManager.swift */; };
 		C6474CA6A0FA0688B11BEC19 /* TimeTrackerCore in Frameworks */ = {isa = PBXBuildFile; productRef = 4E2CE78DBF5D6CB6CEE48996 /* TimeTrackerCore */; };
+		CBFECADF9AFB9F5404109162 /* KeychainStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DDA2D7D0D0B8D4F746FD46E /* KeychainStore.swift */; };
 		CD26ED18B482706140F8D34A /* AppConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B1CF63B89ED46A6CB68B982 /* AppConfig.swift */; };
 		D0120A44476CA9E8543A77CE /* AppConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B1CF63B89ED46A6CB68B982 /* AppConfig.swift */; };
 		D3DB9E6B1A557535C7926000 /* TimerLiveActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96DD6EDEA3DC7F53B91F0B38 /* TimerLiveActivity.swift */; };
 		D4E3C0CAE0B0A0118473BDAA /* TimerActivityAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = C603ED5DC8732D646DF764ED /* TimerActivityAttributes.swift */; };
 		D6131078A550C7936FD9D0D6 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = C22E749D6AADE13AF1EBCC64 /* Models.swift */; };
 		D6EAAA6FCB8B42E9694AC5C6 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA14B5D14E0A86F9E591CEA6 /* SettingsView.swift */; };
+		E37CA7C86F7AC4D4D5517A72 /* AISettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 971D9B41DA1188E43A115B57 /* AISettings.swift */; };
 		E434533A09AB25B21909CE27 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = C22E749D6AADE13AF1EBCC64 /* Models.swift */; };
 		E7E2732F9BCA43697680062D /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D6D56395200FB7D284D12D6 /* HomeView.swift */; };
 		E8C85277C8239B96366F45B2 /* VoiceCaptureController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70CAF7850714C128EB24A358 /* VoiceCaptureController.swift */; };
@@ -74,8 +79,6 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		03FEA3B3F8DAF8B1F101CA06 /* KeychainStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainStore.swift; sourceTree = "<group>"; };
-		04554397921E2BEA93D8E856 /* ClaudeHaikuService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClaudeHaikuService.swift; sourceTree = "<group>"; };
 		0621CB170A692213E12788EA /* TimeTrackerShortcuts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeTrackerShortcuts.swift; sourceTree = "<group>"; };
 		09442919A8CC6D4860719FE8 /* TimeTrackerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeTrackerApp.swift; sourceTree = "<group>"; };
 		0999F55346E27E7A1C391DC1 /* LogTimeControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogTimeControl.swift; sourceTree = "<group>"; };
@@ -96,9 +99,13 @@
 		87E590C55DE1B599FB9B5309 /* LiveActivityManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveActivityManager.swift; sourceTree = "<group>"; };
 		8B1CF63B89ED46A6CB68B982 /* AppConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppConfig.swift; sourceTree = "<group>"; };
 		96DD6EDEA3DC7F53B91F0B38 /* TimerLiveActivity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerLiveActivity.swift; sourceTree = "<group>"; };
+		971D9B41DA1188E43A115B57 /* AISettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AISettings.swift; sourceTree = "<group>"; };
 		9D30EC636CA4ADBD10DC1DE2 /* TranscriptionEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TranscriptionEngine.swift; sourceTree = "<group>"; };
+		9DDA2D7D0D0B8D4F746FD46E /* KeychainStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainStore.swift; sourceTree = "<group>"; };
+		A17A68CC514739A3A3BC734F /* AIWorker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIWorker.swift; sourceTree = "<group>"; };
 		A5474E4E0BCDFAF982ABA880 /* TimeTracker.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = TimeTracker.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B16275D30086F71BD6ABCCBD /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
+		B8CABC4D99320C042D2E6C19 /* SummaryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SummaryView.swift; sourceTree = "<group>"; };
 		C22E749D6AADE13AF1EBCC64 /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
 		C603ED5DC8732D646DF764ED /* TimerActivityAttributes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerActivityAttributes.swift; sourceTree = "<group>"; };
 		CAD342751290AF18EA186A4A /* TimeTrackerWidgetBundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeTrackerWidgetBundle.swift; sourceTree = "<group>"; };
@@ -107,6 +114,7 @@
 		E443C2308C4748F2F6168385 /* SharedIntents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedIntents.swift; sourceTree = "<group>"; };
 		E855BD506B4E538B0F671C49 /* LegacySpeechEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegacySpeechEngine.swift; sourceTree = "<group>"; };
 		ECAEC97223FCB911549679F8 /* EntryService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EntryService.swift; sourceTree = "<group>"; };
+		FB32533D2C3EE5B8D6F6DFE8 /* EntryService+AI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "EntryService+AI.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -140,15 +148,6 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		37A453EF13C38D670CB4AF3A /* LLM */ = {
-			isa = PBXGroup;
-			children = (
-				04554397921E2BEA93D8E856 /* ClaudeHaikuService.swift */,
-				03FEA3B3F8DAF8B1F101CA06 /* KeychainStore.swift */,
-			);
-			path = LLM;
-			sourceTree = "<group>";
-		};
 		37D66370DC196F67598746FF = {
 			isa = PBXGroup;
 			children = (
@@ -165,8 +164,10 @@
 		60BC7CFAFD0FC8F8B744A970 /* Shared */ = {
 			isa = PBXGroup;
 			children = (
+				971D9B41DA1188E43A115B57 /* AISettings.swift */,
 				8B1CF63B89ED46A6CB68B982 /* AppConfig.swift */,
 				ECAEC97223FCB911549679F8 /* EntryService.swift */,
+				9DDA2D7D0D0B8D4F746FD46E /* KeychainStore.swift */,
 				7D1310FCE4F773A4E91672F6 /* ListenRequest.swift */,
 				87E590C55DE1B599FB9B5309 /* LiveActivityManager.swift */,
 				C22E749D6AADE13AF1EBCC64 /* Models.swift */,
@@ -184,16 +185,26 @@
 				5D6D56395200FB7D284D12D6 /* HomeView.swift */,
 				6DA017B8BD6D99416ABCF95D /* MicButton.swift */,
 				DA14B5D14E0A86F9E591CEA6 /* SettingsView.swift */,
+				B8CABC4D99320C042D2E6C19 /* SummaryView.swift */,
 				5DF547B9F95F0C8C87595E55 /* TodayView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
 		};
+		8240CE097AB61AEF903E59E1 /* AI */ = {
+			isa = PBXGroup;
+			children = (
+				A17A68CC514739A3A3BC734F /* AIWorker.swift */,
+				FB32533D2C3EE5B8D6F6DFE8 /* EntryService+AI.swift */,
+			);
+			path = AI;
+			sourceTree = "<group>";
+		};
 		9137D590C06AF2D6C4C2F0A8 /* App */ = {
 			isa = PBXGroup;
 			children = (
+				8240CE097AB61AEF903E59E1 /* AI */,
 				B8353AFF06D54BAA62589C06 /* Intents */,
-				37A453EF13C38D670CB4AF3A /* LLM */,
 				CDCADE9EC488B7D119419E39 /* Speech */,
 				75DDA5B53A6DFFEFEB105958 /* Views */,
 				DB495902D3E14089A5352E07 /* Assets.xcassets */,
@@ -360,13 +371,15 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E37CA7C86F7AC4D4D5517A72 /* AISettings.swift in Sources */,
+				53463BA19F4EAAAE87C14982 /* AIWorker.swift in Sources */,
 				45258BEA6D572D475CFF128E /* ActivityIntents.swift in Sources */,
 				CD26ED18B482706140F8D34A /* AppConfig.swift in Sources */,
-				0994D02695E668DBB28C09AB /* ClaudeHaikuService.swift in Sources */,
 				9F8E3BDF90089CE9C05130C8 /* EditEntryView.swift in Sources */,
+				A4A256617BDE80CB13B9EBBD /* EntryService+AI.swift in Sources */,
 				02F7E843642927E63EDB8D64 /* EntryService.swift in Sources */,
 				E7E2732F9BCA43697680062D /* HomeView.swift in Sources */,
-				BDD66BEF266DE046B44339A3 /* KeychainStore.swift in Sources */,
+				CBFECADF9AFB9F5404109162 /* KeychainStore.swift in Sources */,
 				B8E6BC4AEA8995768AFBCEC6 /* LegacySpeechEngine.swift in Sources */,
 				AE3AE395B42A80DAC49F6C3B /* ListenRequest.swift in Sources */,
 				73DEBA40981C3A8D91B147F0 /* LiveActivityManager.swift in Sources */,
@@ -376,6 +389,7 @@
 				B6515DF3E1F5C881D16CC6F5 /* SharedIntents.swift in Sources */,
 				91F0FAC362C7F3A84D31013F /* SharedStore.swift in Sources */,
 				54DD7DA7D14D77DD6DB812C1 /* SpeechAnalyzerEngine.swift in Sources */,
+				63DDBFE2263794A6F3C7BE3B /* SummaryView.swift in Sources */,
 				2B4BF70FEFF83ECFD60CA439 /* TimeTrackerApp.swift in Sources */,
 				977DFFC9F420B0DA9CEA2915 /* TimeTrackerShortcuts.swift in Sources */,
 				D4E3C0CAE0B0A0118473BDAA /* TimerActivityAttributes.swift in Sources */,
@@ -389,8 +403,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9D033A47F6BDEEAE18C8C172 /* AISettings.swift in Sources */,
 				D0120A44476CA9E8543A77CE /* AppConfig.swift in Sources */,
 				7556E0AF69201036E24D276A /* EntryService.swift in Sources */,
+				726E5D2615E84FDF5A9C7F42 /* KeychainStore.swift in Sources */,
 				F2479B2519D51AAEB334E22D /* ListenRequest.swift in Sources */,
 				BE2AD357FD510782F32FE5C8 /* LiveActivityManager.swift in Sources */,
 				E9D165BC11A46329672690F8 /* LogTimeControl.swift in Sources */,

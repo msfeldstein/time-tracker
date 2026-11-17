@@ -1,9 +1,13 @@
 import SwiftUI
+import TimeTrackerCore
 
 struct SettingsView: View {
     @State private var keyInput = ""
     @State private var hasKey = AnthropicKey.load() != nil
     @State private var keyError: String?
+    @State private var aiEnabled = AISettings.isEnabled
+    @State private var testing = false
+    @State private var testResult: (ok: Bool, message: String)?
 
     var body: some View {
         Form {
@@ -26,12 +30,37 @@ struct SettingsView: View {
             }
 
             Section {
+                Toggle("Use AI (Claude Haiku)", isOn: $aiEnabled)
+                    .onChange(of: aiEnabled) { _, isOn in
+                        AISettings.isEnabled = isOn
+                        AIWorker.shared.settingsChanged()
+                    }
+                Text(AISettings.disclosure)
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+
                 if hasKey {
                     Label("Key saved on this iPhone", systemImage: "checkmark.seal.fill")
                         .foregroundStyle(.green)
+                    Button {
+                        testKey()
+                    } label: {
+                        if testing {
+                            HStack { ProgressView(); Text("Testing\u{2026}") }
+                        } else {
+                            Text("Test key")
+                        }
+                    }
+                    .disabled(testing)
+                    if let testResult {
+                        Label(testResult.message, systemImage: testResult.ok ? "checkmark.circle.fill" : "xmark.circle.fill")
+                            .foregroundStyle(testResult.ok ? .green : .red)
+                    }
                     Button("Remove key", role: .destructive) {
                         AnthropicKey.remove()
                         hasKey = false
+                        testResult = nil
+                        AIWorker.shared.settingsChanged()
                     }
                 } else {
                     SecureField("Anthropic API key", text: $keyInput)
@@ -43,8 +72,10 @@ struct SettingsView: View {
                             keyInput = ""
                             keyError = nil
                             hasKey = AnthropicKey.load() != nil
+                            AIWorker.shared.settingsChanged()
+                            testKey()
                         } catch {
-                            keyError = "Couldn't save the key. Please try again."
+                            keyError = "Couldn\u{2019}t save the key. Please try again."
                         }
                     }
                     .disabled(keyInput.trimmingCharacters(in: .whitespaces).isEmpty)
@@ -52,10 +83,14 @@ struct SettingsView: View {
                         Text(keyError).foregroundStyle(.red)
                     }
                 }
+
+                if aiEnabled && hasKey {
+                    LabeledContent("Status", value: AIWorker.shared.status.description)
+                }
             } header: {
-                Text("Smart features (coming soon)")
+                Text("Smart features")
             } footer: {
-                Text("Optional. A future update will use Claude Haiku to understand tricky phrases, group activities into categories, and write daily and weekly summaries. The key is stored only in this iPhone\u{2019}s Keychain. Your voice recordings are never sent anywhere.")
+                Text("Optional. Claude Haiku sorts activities into categories, makes sense of unclear voice notes, suggests when a forgotten timer probably ended, and writes your summaries. Everything still works offline or without a key; AI work waits and retries later. The key is stored only in this iPhone\u{2019}s Keychain.")
             }
 
             Section("Storage") {
@@ -78,6 +113,22 @@ struct SettingsView: View {
             }
         }
         .navigationTitle("Settings")
+    }
+
+    private func testKey() {
+        testing = true
+        testResult = nil
+        Task {
+            do {
+                try await LLMServices.claude().testConnection()
+                testResult = (true, "The key works.")
+            } catch let error as LLMServiceError {
+                testResult = (false, error.userMessage)
+            } catch {
+                testResult = (false, error.localizedDescription)
+            }
+            testing = false
+        }
     }
 
     private func tip(_ symbol: String, _ text: String) -> some View {

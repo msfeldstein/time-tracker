@@ -90,6 +90,9 @@ jobs:
           xcrun simctl launch "$SHOT_UDID" "$BUNDLE_ID" -TTOpenSettings
           shot 3-settings 10
           xcrun simctl terminate "$SHOT_UDID" "$BUNDLE_ID" || true
+          xcrun simctl launch "$SHOT_UDID" "$BUNDLE_ID" -TTOpenSummary
+          shot 5-summary 12
+          xcrun simctl terminate "$SHOT_UDID" "$BUNDLE_ID" || true
           xcrun simctl openurl "$SHOT_UDID" timetracker://listen
           shot 4-listen-url 12
           xcrun simctl spawn "$SHOT_UDID" log show --last 10m --predicate 'process == "TimeTracker"' --style compact > screenshots/app-log.txt || true

@@ -17,7 +17,7 @@ enum SharedStore {
         let location: Location
     }
 
-    static var schema: Schema { Schema([TimeEntry.self, CaptureRecord.self]) }
+    static var schema: Schema { Schema([TimeEntry.self, CaptureRecord.self, CategoryAssignment.self, AIInterpretation.self, SummaryCache.self]) }
     static let loaded: Loaded = load()
 
     static var container: ModelContainer { loaded.container }

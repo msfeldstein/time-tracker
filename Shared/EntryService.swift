@@ -14,7 +14,10 @@ final class EntryService {
     static let shared = EntryService()
 
     let context: ModelContext
-    private let logger = Logger(subsystem: "TimeTracker", category: "EntryService")
+    let logger = Logger(subsystem: "TimeTracker", category: "EntryService")
+
+    /// Called after every change; the app uses it to wake the AI worker.
+    var onChange: (@MainActor () -> Void)?
 
     private init() {
         context = SharedStore.container.mainContext
@@ -110,25 +113,30 @@ final class EntryService {
 
     private func interpret(_ record: CaptureRecord, commands: [ParsedCommand]) -> String {
         let running = runningEntries()
-        let plan = CommandResolver.resolve(
+        let resolution = CommandResolver.resolveWithConfidence(
             commands,
             running: running.map { RunningActivity(id: $0.id, name: $0.name, startedAt: $0.startedAt) },
             rawText: record.text
         )
+        let plan = resolution.actions
+        record.lowConfidenceStopIDs = resolution.lowConfidenceStops
 
         var messages: [String] = []
         for action in plan {
             switch action {
             case .start(let name):
-                context.insert(TimeEntry(
+                let entry = TimeEntry(
                     kind: .activity, name: name, startedAt: record.capturedAt,
                     rawTranscript: record.text, source: record.source
-                ))
+                )
+                entry.captureID = record.id
+                context.insert(entry)
                 messages.append("Started \(name)")
 
             case .stop(let id):
                 guard let entry = running.first(where: { $0.id == id }) else { continue }
                 entry.endedAt = max(record.capturedAt, entry.startedAt)
+                entry.stoppedByCaptureID = record.id
                 messages.append("Stopped \(entry.name) · \(DurationFormatting.short(entry.duration()))")
 
             case .alreadyRunning(let id):
@@ -148,6 +156,17 @@ final class EntryService {
             }
         }
 
+        // The local result is already applied; unclear parts get a second opinion from the LLM later.
+        let unclear = plan.contains {
+            switch $0 {
+            case .note, .noMatch: true
+            default: false
+            }
+        }
+        if (unclear || !resolution.lowConfidenceStops.isEmpty) && AISettings.isActive {
+            record.aiStatus = .pending
+        }
+
         let outcome = messages.isEmpty ? "Saved" : messages.joined(separator: "\n")
         record.interpretedAt = Date()
         record.outcome = outcome
@@ -155,10 +174,12 @@ final class EntryService {
     }
 
     private func insertNote(text: String, record: CaptureRecord) {
-        context.insert(TimeEntry(
+        let note = TimeEntry(
             kind: .note, name: text, startedAt: record.capturedAt, endedAt: record.capturedAt,
             rawTranscript: record.text, source: record.source
-        ))
+        )
+        note.captureID = record.id
+        context.insert(note)
     }
 
     // MARK: - Direct edits (taps, Live Activity button, Today view)
@@ -199,13 +220,36 @@ final class EntryService {
         guard ((try? context.fetchCount(FetchDescriptor<TimeEntry>())) ?? 0) == 0 else { return }
         let now = Date()
         func minutesAgo(_ minutes: Double) -> Date { now.addingTimeInterval(-minutes * 60) }
-        let samples: [TimeEntry] = [
+        func daysAgo(_ days: Double, hour: Double) -> Date {
+            Calendar.current.startOfDay(for: now).addingTimeInterval(-days * 86400 + hour * 3600)
+        }
+        func done(_ name: String, _ category: String, from start: Date, minutes: Double) -> TimeEntry {
+            let entry = TimeEntry(kind: .activity, name: name, startedAt: start, endedAt: start.addingTimeInterval(minutes * 60), rawTranscript: "starting \(name.lowercased())", source: .voice)
+            entry.category = category
+            entry.categorySourceRaw = CategorySource.cache.rawValue
+            return entry
+        }
+        var samples: [TimeEntry] = [
             TimeEntry(kind: .activity, name: "Vacuuming", startedAt: minutesAgo(215), rawTranscript: "starting vacuuming", source: .voice),
-            TimeEntry(kind: .activity, name: "Cooking dinner", startedAt: minutesAgo(150), endedAt: minutesAgo(105), rawTranscript: "starting cooking dinner", source: .voice),
+            done("Cooking dinner", "Cooking", from: minutesAgo(150), minutes: 45),
             TimeEntry(kind: .note, name: "Remember to buy soap", startedAt: minutesAgo(90), endedAt: minutesAgo(90), rawTranscript: "Remember to buy soap", source: .voice),
             TimeEntry(kind: .activity, name: "Laundry", startedAt: minutesAgo(40), rawTranscript: "I'm doing laundry", source: .siri),
             TimeEntry(kind: .activity, name: "Dishes", startedAt: minutesAgo(12), rawTranscript: "starting the dishes", source: .voice),
+            done("School run", "Kids", from: minutesAgo(400), minutes: 35),
+            done("Yoga", "Self-care", from: minutesAgo(470), minutes: 30),
         ]
+        for day in 1...3 {
+            let d = Double(day)
+            samples += [
+                done("Vacuuming", "Chores", from: daysAgo(d, hour: 10), minutes: 25 + d * 3),
+                done("Cooking dinner", "Cooking", from: daysAgo(d, hour: 18), minutes: 40 + d * 5),
+                done("School run", "Kids", from: daysAgo(d, hour: 8), minutes: 30),
+                done("Groceries", "Errands", from: daysAgo(d, hour: 14), minutes: 50),
+            ]
+        }
+        for (key, category) in [("vacuum", "Chores"), ("cook dinner", "Cooking"), ("school run", "Kids"), ("grocery", "Errands"), ("yoga", "Self-care")] {
+            context.insert(CategoryAssignment(key: key, category: category, source: .ai))
+        }
         for sample in samples {
             context.insert(sample)
         }
@@ -219,9 +263,10 @@ final class EntryService {
     func refreshSurfaces() async {
         WidgetCenter.shared.reloadAllTimelines()
         await LiveActivityManager.sync(running: runningEntries().map(RunningSnapshot.init))
+        onChange?()
     }
 
-    private func save() {
+    func save() {
         guard context.hasChanges else { return }
         do {
             try context.save()
