@@ -1,0 +1,17 @@
+# Xcode
+xcuserdata/
+*.xcuserstate
+DerivedData/
+build/
+.build/
+.swiftpm/
+*.ipa
+*.dSYM.zip
+*.dSYM
+
+# Local signing overrides (team ID, personal bundle ID)
+Config/Local.xcconfig
+
+# Secrets must never be committed (this repo is public)
+*.p8
+.env
