@@ -124,6 +124,18 @@ struct EntryRow: View {
     }
 
     var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            mainRow
+            if let suggestion = entry.activeSuggestion {
+                SuggestionFix(entry: entry, suggestion: suggestion)
+                    .padding(.leading, 40)
+            }
+        }
+        .padding(.vertical, 4)
+        .contentShape(Rectangle())
+    }
+
+    private var mainRow: some View {
         HStack(alignment: .top, spacing: 12) {
             Image(systemName: icon)
                 .font(.title3)
@@ -156,9 +168,6 @@ struct EntryRow: View {
                         .font(.subheadline.weight(.semibold))
                         .foregroundStyle(.orange)
                 }
-                if let suggestion = entry.activeSuggestion {
-                    SuggestionFix(entry: entry, suggestion: suggestion)
-                }
             }
 
             Spacer(minLength: 8)
@@ -175,8 +184,6 @@ struct EntryRow: View {
                 .font(.title3.weight(.semibold).monospacedDigit())
             }
         }
-        .padding(.vertical, 4)
-        .contentShape(Rectangle())
     }
 
     private var icon: String {
@@ -248,6 +255,7 @@ struct SuggestionFix: View {
             .accessibilityHint("Stops \(entry.name) at \(suggestion.formatted(date: .omitted, time: .shortened))")
         }
         .padding(10)
+        .frame(maxWidth: .infinity, alignment: .leading)
         .background(Color.orange.opacity(0.1), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
     }
 }
