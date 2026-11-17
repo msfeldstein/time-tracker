@@ -1,5 +1,5 @@
 import XCTest
-@testable import TimeTrackerCore
+import TimeTrackerCore
 
 final class DurationFormattingTests: XCTestCase {
     func testShort() {

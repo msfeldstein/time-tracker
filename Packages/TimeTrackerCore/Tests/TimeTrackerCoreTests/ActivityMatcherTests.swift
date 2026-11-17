@@ -1,5 +1,5 @@
 import XCTest
-@testable import TimeTrackerCore
+import TimeTrackerCore
 
 final class ActivityMatcherTests: XCTestCase {
     func testArticleAndPluralDifferences() {

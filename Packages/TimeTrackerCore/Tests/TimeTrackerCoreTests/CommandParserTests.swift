@@ -1,5 +1,5 @@
 import XCTest
-@testable import TimeTrackerCore
+import TimeTrackerCore
 
 final class CommandParserTests: XCTestCase {
     private func parse(_ text: String) -> [ParsedCommand] {

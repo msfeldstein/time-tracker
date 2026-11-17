@@ -1,0 +1,815 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		02F7E843642927E63EDB8D64 /* EntryService.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECAEC97223FCB911549679F8 /* EntryService.swift */; };
+		0994D02695E668DBB28C09AB /* ClaudeHaikuService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04554397921E2BEA93D8E856 /* ClaudeHaikuService.swift */; };
+		2B4BF70FEFF83ECFD60CA439 /* TimeTrackerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09442919A8CC6D4860719FE8 /* TimeTrackerApp.swift */; };
+		3E15F3923C9ED19AFCB452BA /* TimerActivityAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = C603ED5DC8732D646DF764ED /* TimerActivityAttributes.swift */; };
+		45258BEA6D572D475CFF128E /* ActivityIntents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C97F9312153EB910E802CBE /* ActivityIntents.swift */; };
+		4E6F6F3F87AC90C4F1158291 /* DurationFormattingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E7DD3BA5F20F52D4F64E984 /* DurationFormattingTests.swift */; };
+		507775A76542B53BC3BE3F62 /* TodayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DF547B9F95F0C8C87595E55 /* TodayView.swift */; };
+		54DD7DA7D14D77DD6DB812C1 /* SpeechAnalyzerEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1766AB95D84FF346E85EB137 /* SpeechAnalyzerEngine.swift */; };
+		59973C3454E65B639E189B6C /* TimeTrackerWidgetBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAD342751290AF18EA186A4A /* TimeTrackerWidgetBundle.swift */; };
+		6FA41586ED459A0329027BB0 /* TimeTrackerWidgets.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 11C1F68B15263FB9A7D27BE9 /* TimeTrackerWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		73DEBA40981C3A8D91B147F0 /* LiveActivityManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87E590C55DE1B599FB9B5309 /* LiveActivityManager.swift */; };
+		7556E0AF69201036E24D276A /* EntryService.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECAEC97223FCB911549679F8 /* EntryService.swift */; };
+		77B8C9A6FD34D2753DEFE7F0 /* TimeTrackerCore in Frameworks */ = {isa = PBXBuildFile; productRef = 87F3937957643873D88E4BC2 /* TimeTrackerCore */; };
+		7B85751A5B246B58630E5BE7 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 19CD539890F5D35146347908 /* WidgetKit.framework */; };
+		7D2FA1A8AD8274271E0A27E9 /* SharedIntents.swift in Sources */ = {isa = PBXBuildFile; fileRef = E443C2308C4748F2F6168385 /* SharedIntents.swift */; };
+		86919EEF10EBCC7A6D404072 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B16275D30086F71BD6ABCCBD /* SwiftUI.framework */; };
+		869F93CA21FDC5A080A8D772 /* SharedStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 684702EAFD7862185FCF1BCB /* SharedStore.swift */; };
+		87980A10C8815EBF0A3BFA2C /* TimeTrackerCore in Frameworks */ = {isa = PBXBuildFile; productRef = 9C2749136A58FD0C62FAA071 /* TimeTrackerCore */; };
+		9034F365FEF239C9660A11F2 /* ActivityMatcherTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B0ADD4A0F229B3007C71293 /* ActivityMatcherTests.swift */; };
+		91F0FAC362C7F3A84D31013F /* SharedStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 684702EAFD7862185FCF1BCB /* SharedStore.swift */; };
+		955839A6FC97280C94990B94 /* CommandResolverTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27E0CE1140037612B0F1EF56 /* CommandResolverTests.swift */; };
+		977DFFC9F420B0DA9CEA2915 /* TimeTrackerShortcuts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0621CB170A692213E12788EA /* TimeTrackerShortcuts.swift */; };
+		98ECB27448252D38BE27C1BD /* RunningActivityWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE1A593BA80395F97303B18 /* RunningActivityWidget.swift */; };
+		9E09860D44713C170D21EF99 /* MicButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DA017B8BD6D99416ABCF95D /* MicButton.swift */; };
+		9F8E3BDF90089CE9C05130C8 /* EditEntryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09ACD334BF3A3B29E2937FC0 /* EditEntryView.swift */; };
+		A60214A1C03E34304B31C01C /* CommandParserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30C49314D09FA25C229415F1 /* CommandParserTests.swift */; };
+		AB85F813070A6275F5408270 /* TranscriptionEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D30EC636CA4ADBD10DC1DE2 /* TranscriptionEngine.swift */; };
+		AE3AE395B42A80DAC49F6C3B /* ListenRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D1310FCE4F773A4E91672F6 /* ListenRequest.swift */; };
+		B6515DF3E1F5C881D16CC6F5 /* SharedIntents.swift in Sources */ = {isa = PBXBuildFile; fileRef = E443C2308C4748F2F6168385 /* SharedIntents.swift */; };
+		B8E6BC4AEA8995768AFBCEC6 /* LegacySpeechEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = E855BD506B4E538B0F671C49 /* LegacySpeechEngine.swift */; };
+		BDD66BEF266DE046B44339A3 /* KeychainStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03FEA3B3F8DAF8B1F101CA06 /* KeychainStore.swift */; };
+		BDDE579211FCB5F7E4B4CAAD /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DB495902D3E14089A5352E07 /* Assets.xcassets */; };
+		BE2AD357FD510782F32FE5C8 /* LiveActivityManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87E590C55DE1B599FB9B5309 /* LiveActivityManager.swift */; };
+		C6474CA6A0FA0688B11BEC19 /* TimeTrackerCore in Frameworks */ = {isa = PBXBuildFile; productRef = 4E2CE78DBF5D6CB6CEE48996 /* TimeTrackerCore */; };
+		CD26ED18B482706140F8D34A /* AppConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B1CF63B89ED46A6CB68B982 /* AppConfig.swift */; };
+		D0120A44476CA9E8543A77CE /* AppConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B1CF63B89ED46A6CB68B982 /* AppConfig.swift */; };
+		D3DB9E6B1A557535C7926000 /* TimerLiveActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96DD6EDEA3DC7F53B91F0B38 /* TimerLiveActivity.swift */; };
+		D4E3C0CAE0B0A0118473BDAA /* TimerActivityAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = C603ED5DC8732D646DF764ED /* TimerActivityAttributes.swift */; };
+		D6131078A550C7936FD9D0D6 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = C22E749D6AADE13AF1EBCC64 /* Models.swift */; };
+		D6EAAA6FCB8B42E9694AC5C6 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA14B5D14E0A86F9E591CEA6 /* SettingsView.swift */; };
+		E434533A09AB25B21909CE27 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = C22E749D6AADE13AF1EBCC64 /* Models.swift */; };
+		E7E2732F9BCA43697680062D /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D6D56395200FB7D284D12D6 /* HomeView.swift */; };
+		E8C85277C8239B96366F45B2 /* VoiceCaptureController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70CAF7850714C128EB24A358 /* VoiceCaptureController.swift */; };
+		E9D165BC11A46329672690F8 /* LogTimeControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0999F55346E27E7A1C391DC1 /* LogTimeControl.swift */; };
+		F2479B2519D51AAEB334E22D /* ListenRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D1310FCE4F773A4E91672F6 /* ListenRequest.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		9D8C5BA6B5713F4A2EE04331 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0ABDC2A596C9BAAF0F20A631 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A744B6A5E8AAE637CCFEE76F;
+			remoteInfo = TimeTrackerWidgets;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		B4800F0302F67DDB949976B0 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				6FA41586ED459A0329027BB0 /* TimeTrackerWidgets.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		03FEA3B3F8DAF8B1F101CA06 /* KeychainStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainStore.swift; sourceTree = "<group>"; };
+		04554397921E2BEA93D8E856 /* ClaudeHaikuService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClaudeHaikuService.swift; sourceTree = "<group>"; };
+		0621CB170A692213E12788EA /* TimeTrackerShortcuts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeTrackerShortcuts.swift; sourceTree = "<group>"; };
+		09442919A8CC6D4860719FE8 /* TimeTrackerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeTrackerApp.swift; sourceTree = "<group>"; };
+		0999F55346E27E7A1C391DC1 /* LogTimeControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogTimeControl.swift; sourceTree = "<group>"; };
+		09ACD334BF3A3B29E2937FC0 /* EditEntryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditEntryView.swift; sourceTree = "<group>"; };
+		0CE1A593BA80395F97303B18 /* RunningActivityWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunningActivityWidget.swift; sourceTree = "<group>"; };
+		11C1F68B15263FB9A7D27BE9 /* TimeTrackerWidgets.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = TimeTrackerWidgets.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		1766AB95D84FF346E85EB137 /* SpeechAnalyzerEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechAnalyzerEngine.swift; sourceTree = "<group>"; };
+		19CD539890F5D35146347908 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
+		27E0CE1140037612B0F1EF56 /* CommandResolverTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommandResolverTests.swift; sourceTree = "<group>"; };
+		2C97F9312153EB910E802CBE /* ActivityIntents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityIntents.swift; sourceTree = "<group>"; };
+		30C49314D09FA25C229415F1 /* CommandParserTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommandParserTests.swift; sourceTree = "<group>"; };
+		3B0ADD4A0F229B3007C71293 /* ActivityMatcherTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityMatcherTests.swift; sourceTree = "<group>"; };
+		5A3D64AEA753C187093ED16A /* TimeTrackerCore */ = {isa = PBXFileReference; lastKnownFileType = folder; name = TimeTrackerCore; path = Packages/TimeTrackerCore; sourceTree = SOURCE_ROOT; };
+		5D6D56395200FB7D284D12D6 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
+		5DF547B9F95F0C8C87595E55 /* TodayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodayView.swift; sourceTree = "<group>"; };
+		5F37B9F1ACCF5DFCAFD52D75 /* Base.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Base.xcconfig; sourceTree = "<group>"; };
+		684702EAFD7862185FCF1BCB /* SharedStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedStore.swift; sourceTree = "<group>"; };
+		6DA017B8BD6D99416ABCF95D /* MicButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MicButton.swift; sourceTree = "<group>"; };
+		6E7DD3BA5F20F52D4F64E984 /* DurationFormattingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DurationFormattingTests.swift; sourceTree = "<group>"; };
+		70CAF7850714C128EB24A358 /* VoiceCaptureController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceCaptureController.swift; sourceTree = "<group>"; };
+		7D1310FCE4F773A4E91672F6 /* ListenRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListenRequest.swift; sourceTree = "<group>"; };
+		87E590C55DE1B599FB9B5309 /* LiveActivityManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveActivityManager.swift; sourceTree = "<group>"; };
+		8B1CF63B89ED46A6CB68B982 /* AppConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppConfig.swift; sourceTree = "<group>"; };
+		96DD6EDEA3DC7F53B91F0B38 /* TimerLiveActivity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerLiveActivity.swift; sourceTree = "<group>"; };
+		97305BB0B300C88D321D3883 /* TimeTrackerTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = TimeTrackerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		9D30EC636CA4ADBD10DC1DE2 /* TranscriptionEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TranscriptionEngine.swift; sourceTree = "<group>"; };
+		A5474E4E0BCDFAF982ABA880 /* TimeTracker.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = TimeTracker.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		B16275D30086F71BD6ABCCBD /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
+		C22E749D6AADE13AF1EBCC64 /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
+		C603ED5DC8732D646DF764ED /* TimerActivityAttributes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerActivityAttributes.swift; sourceTree = "<group>"; };
+		CAD342751290AF18EA186A4A /* TimeTrackerWidgetBundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeTrackerWidgetBundle.swift; sourceTree = "<group>"; };
+		DA14B5D14E0A86F9E591CEA6 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		DB495902D3E14089A5352E07 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		E443C2308C4748F2F6168385 /* SharedIntents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedIntents.swift; sourceTree = "<group>"; };
+		E855BD506B4E538B0F671C49 /* LegacySpeechEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegacySpeechEngine.swift; sourceTree = "<group>"; };
+		ECAEC97223FCB911549679F8 /* EntryService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EntryService.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		069714263ACD903D144A0DCA /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				77B8C9A6FD34D2753DEFE7F0 /* TimeTrackerCore in Frameworks */,
+				7B85751A5B246B58630E5BE7 /* WidgetKit.framework in Frameworks */,
+				86919EEF10EBCC7A6D404072 /* SwiftUI.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		6C457D66BAF02C7A96A60334 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C6474CA6A0FA0688B11BEC19 /* TimeTrackerCore in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E2EA108E1A52D340F999EA61 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				87980A10C8815EBF0A3BFA2C /* TimeTrackerCore in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		05A133EDB93358386B71DC81 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A5474E4E0BCDFAF982ABA880 /* TimeTracker.app */,
+				97305BB0B300C88D321D3883 /* TimeTrackerTests.xctest */,
+				11C1F68B15263FB9A7D27BE9 /* TimeTrackerWidgets.appex */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		2F0BC6CBF6348024E0A00F83 /* TimeTrackerCore */ = {
+			isa = PBXGroup;
+			children = (
+				B5D3DCE595119F45ED5DE3B4 /* Tests */,
+			);
+			path = TimeTrackerCore;
+			sourceTree = "<group>";
+		};
+		37A453EF13C38D670CB4AF3A /* LLM */ = {
+			isa = PBXGroup;
+			children = (
+				04554397921E2BEA93D8E856 /* ClaudeHaikuService.swift */,
+				03FEA3B3F8DAF8B1F101CA06 /* KeychainStore.swift */,
+			);
+			path = LLM;
+			sourceTree = "<group>";
+		};
+		37D66370DC196F67598746FF = {
+			isa = PBXGroup;
+			children = (
+				9137D590C06AF2D6C4C2F0A8 /* App */,
+				A4B2635BBBA67074E732F011 /* Config */,
+				B69FEBB91A6A965F45F8C12B /* Packages */,
+				60BC7CFAFD0FC8F8B744A970 /* Shared */,
+				4F2A9F08FFDFA2E59B1FCF32 /* TimeTrackerTests */,
+				BB3F82BB19C06065D09264A8 /* Widgets */,
+				95DFE1387DC507FBE7C56164 /* Frameworks */,
+				05A133EDB93358386B71DC81 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		4F2A9F08FFDFA2E59B1FCF32 /* TimeTrackerTests */ = {
+			isa = PBXGroup;
+			children = (
+				D0CCEE4DF4CFEC5C8E73F018 /* TimeTrackerCoreTests */,
+			);
+			name = TimeTrackerTests;
+			sourceTree = "<group>";
+		};
+		60BC7CFAFD0FC8F8B744A970 /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+				8B1CF63B89ED46A6CB68B982 /* AppConfig.swift */,
+				ECAEC97223FCB911549679F8 /* EntryService.swift */,
+				7D1310FCE4F773A4E91672F6 /* ListenRequest.swift */,
+				87E590C55DE1B599FB9B5309 /* LiveActivityManager.swift */,
+				C22E749D6AADE13AF1EBCC64 /* Models.swift */,
+				E443C2308C4748F2F6168385 /* SharedIntents.swift */,
+				684702EAFD7862185FCF1BCB /* SharedStore.swift */,
+				C603ED5DC8732D646DF764ED /* TimerActivityAttributes.swift */,
+			);
+			path = Shared;
+			sourceTree = "<group>";
+		};
+		75DDA5B53A6DFFEFEB105958 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				09ACD334BF3A3B29E2937FC0 /* EditEntryView.swift */,
+				5D6D56395200FB7D284D12D6 /* HomeView.swift */,
+				6DA017B8BD6D99416ABCF95D /* MicButton.swift */,
+				DA14B5D14E0A86F9E591CEA6 /* SettingsView.swift */,
+				5DF547B9F95F0C8C87595E55 /* TodayView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		9137D590C06AF2D6C4C2F0A8 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				B8353AFF06D54BAA62589C06 /* Intents */,
+				37A453EF13C38D670CB4AF3A /* LLM */,
+				CDCADE9EC488B7D119419E39 /* Speech */,
+				75DDA5B53A6DFFEFEB105958 /* Views */,
+				DB495902D3E14089A5352E07 /* Assets.xcassets */,
+				09442919A8CC6D4860719FE8 /* TimeTrackerApp.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		95DFE1387DC507FBE7C56164 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				B16275D30086F71BD6ABCCBD /* SwiftUI.framework */,
+				19CD539890F5D35146347908 /* WidgetKit.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		A4B2635BBBA67074E732F011 /* Config */ = {
+			isa = PBXGroup;
+			children = (
+				5F37B9F1ACCF5DFCAFD52D75 /* Base.xcconfig */,
+			);
+			path = Config;
+			sourceTree = "<group>";
+		};
+		B5D3DCE595119F45ED5DE3B4 /* Tests */ = {
+			isa = PBXGroup;
+			children = (
+				D0CCEE4DF4CFEC5C8E73F018 /* TimeTrackerCoreTests */,
+			);
+			path = Tests;
+			sourceTree = "<group>";
+		};
+		B69FEBB91A6A965F45F8C12B /* Packages */ = {
+			isa = PBXGroup;
+			children = (
+				2F0BC6CBF6348024E0A00F83 /* TimeTrackerCore */,
+				5A3D64AEA753C187093ED16A /* TimeTrackerCore */,
+			);
+			path = Packages;
+			sourceTree = "<group>";
+		};
+		B8353AFF06D54BAA62589C06 /* Intents */ = {
+			isa = PBXGroup;
+			children = (
+				2C97F9312153EB910E802CBE /* ActivityIntents.swift */,
+				0621CB170A692213E12788EA /* TimeTrackerShortcuts.swift */,
+			);
+			path = Intents;
+			sourceTree = "<group>";
+		};
+		BB3F82BB19C06065D09264A8 /* Widgets */ = {
+			isa = PBXGroup;
+			children = (
+				0999F55346E27E7A1C391DC1 /* LogTimeControl.swift */,
+				0CE1A593BA80395F97303B18 /* RunningActivityWidget.swift */,
+				96DD6EDEA3DC7F53B91F0B38 /* TimerLiveActivity.swift */,
+				CAD342751290AF18EA186A4A /* TimeTrackerWidgetBundle.swift */,
+			);
+			path = Widgets;
+			sourceTree = "<group>";
+		};
+		CDCADE9EC488B7D119419E39 /* Speech */ = {
+			isa = PBXGroup;
+			children = (
+				E855BD506B4E538B0F671C49 /* LegacySpeechEngine.swift */,
+				1766AB95D84FF346E85EB137 /* SpeechAnalyzerEngine.swift */,
+				9D30EC636CA4ADBD10DC1DE2 /* TranscriptionEngine.swift */,
+				70CAF7850714C128EB24A358 /* VoiceCaptureController.swift */,
+			);
+			path = Speech;
+			sourceTree = "<group>";
+		};
+		D0CCEE4DF4CFEC5C8E73F018 /* TimeTrackerCoreTests */ = {
+			isa = PBXGroup;
+			children = (
+				3B0ADD4A0F229B3007C71293 /* ActivityMatcherTests.swift */,
+				30C49314D09FA25C229415F1 /* CommandParserTests.swift */,
+				27E0CE1140037612B0F1EF56 /* CommandResolverTests.swift */,
+				6E7DD3BA5F20F52D4F64E984 /* DurationFormattingTests.swift */,
+			);
+			name = TimeTrackerCoreTests;
+			path = Packages/TimeTrackerCore/Tests/TimeTrackerCoreTests;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		3F88763213538E5BD6C12E5D /* TimeTrackerTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 5ED29127D0F60DFFFE4973DB /* Build configuration list for PBXNativeTarget "TimeTrackerTests" */;
+			buildPhases = (
+				B840A3F78A4D5ABBE95EC93E /* Sources */,
+				E2EA108E1A52D340F999EA61 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = TimeTrackerTests;
+			packageProductDependencies = (
+				9C2749136A58FD0C62FAA071 /* TimeTrackerCore */,
+			);
+			productName = TimeTrackerTests;
+			productReference = 97305BB0B300C88D321D3883 /* TimeTrackerTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		A2D8167A412AA3624C293EE7 /* TimeTracker */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F77AABD9D94F31297D9AFBDF /* Build configuration list for PBXNativeTarget "TimeTracker" */;
+			buildPhases = (
+				578AA88EABA6854EB589F889 /* Sources */,
+				FDC7E62DB5D8B923924844BD /* Resources */,
+				6C457D66BAF02C7A96A60334 /* Frameworks */,
+				B4800F0302F67DDB949976B0 /* Embed Foundation Extensions */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				4B630F2D4CC7EBCEB8C37DD0 /* PBXTargetDependency */,
+			);
+			name = TimeTracker;
+			packageProductDependencies = (
+				4E2CE78DBF5D6CB6CEE48996 /* TimeTrackerCore */,
+			);
+			productName = TimeTracker;
+			productReference = A5474E4E0BCDFAF982ABA880 /* TimeTracker.app */;
+			productType = "com.apple.product-type.application";
+		};
+		A744B6A5E8AAE637CCFEE76F /* TimeTrackerWidgets */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = EC72AFFF1717275E32214FAD /* Build configuration list for PBXNativeTarget "TimeTrackerWidgets" */;
+			buildPhases = (
+				DA002C9EB6FF5B75974447D6 /* Sources */,
+				069714263ACD903D144A0DCA /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = TimeTrackerWidgets;
+			packageProductDependencies = (
+				87F3937957643873D88E4BC2 /* TimeTrackerCore */,
+			);
+			productName = TimeTrackerWidgets;
+			productReference = 11C1F68B15263FB9A7D27BE9 /* TimeTrackerWidgets.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		0ABDC2A596C9BAAF0F20A631 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 2600;
+				TargetAttributes = {
+					3F88763213538E5BD6C12E5D = {
+						DevelopmentTeam = "";
+						ProvisioningStyle = Automatic;
+					};
+					A2D8167A412AA3624C293EE7 = {
+						DevelopmentTeam = "";
+						ProvisioningStyle = Automatic;
+					};
+					A744B6A5E8AAE637CCFEE76F = {
+						DevelopmentTeam = "";
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = CA02C8256257C68402D03771 /* Build configuration list for PBXProject "TimeTracker" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 37D66370DC196F67598746FF;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				A5E58CCA1B2852F118AB0EA9 /* XCLocalSwiftPackageReference "Packages/TimeTrackerCore" */,
+			);
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 05A133EDB93358386B71DC81 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				A2D8167A412AA3624C293EE7 /* TimeTracker */,
+				A744B6A5E8AAE637CCFEE76F /* TimeTrackerWidgets */,
+				3F88763213538E5BD6C12E5D /* TimeTrackerTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		FDC7E62DB5D8B923924844BD /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BDDE579211FCB5F7E4B4CAAD /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		578AA88EABA6854EB589F889 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				45258BEA6D572D475CFF128E /* ActivityIntents.swift in Sources */,
+				CD26ED18B482706140F8D34A /* AppConfig.swift in Sources */,
+				0994D02695E668DBB28C09AB /* ClaudeHaikuService.swift in Sources */,
+				9F8E3BDF90089CE9C05130C8 /* EditEntryView.swift in Sources */,
+				02F7E843642927E63EDB8D64 /* EntryService.swift in Sources */,
+				E7E2732F9BCA43697680062D /* HomeView.swift in Sources */,
+				BDD66BEF266DE046B44339A3 /* KeychainStore.swift in Sources */,
+				B8E6BC4AEA8995768AFBCEC6 /* LegacySpeechEngine.swift in Sources */,
+				AE3AE395B42A80DAC49F6C3B /* ListenRequest.swift in Sources */,
+				73DEBA40981C3A8D91B147F0 /* LiveActivityManager.swift in Sources */,
+				9E09860D44713C170D21EF99 /* MicButton.swift in Sources */,
+				E434533A09AB25B21909CE27 /* Models.swift in Sources */,
+				D6EAAA6FCB8B42E9694AC5C6 /* SettingsView.swift in Sources */,
+				B6515DF3E1F5C881D16CC6F5 /* SharedIntents.swift in Sources */,
+				91F0FAC362C7F3A84D31013F /* SharedStore.swift in Sources */,
+				54DD7DA7D14D77DD6DB812C1 /* SpeechAnalyzerEngine.swift in Sources */,
+				2B4BF70FEFF83ECFD60CA439 /* TimeTrackerApp.swift in Sources */,
+				977DFFC9F420B0DA9CEA2915 /* TimeTrackerShortcuts.swift in Sources */,
+				D4E3C0CAE0B0A0118473BDAA /* TimerActivityAttributes.swift in Sources */,
+				507775A76542B53BC3BE3F62 /* TodayView.swift in Sources */,
+				AB85F813070A6275F5408270 /* TranscriptionEngine.swift in Sources */,
+				E8C85277C8239B96366F45B2 /* VoiceCaptureController.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B840A3F78A4D5ABBE95EC93E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9034F365FEF239C9660A11F2 /* ActivityMatcherTests.swift in Sources */,
+				A60214A1C03E34304B31C01C /* CommandParserTests.swift in Sources */,
+				955839A6FC97280C94990B94 /* CommandResolverTests.swift in Sources */,
+				4E6F6F3F87AC90C4F1158291 /* DurationFormattingTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		DA002C9EB6FF5B75974447D6 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D0120A44476CA9E8543A77CE /* AppConfig.swift in Sources */,
+				7556E0AF69201036E24D276A /* EntryService.swift in Sources */,
+				F2479B2519D51AAEB334E22D /* ListenRequest.swift in Sources */,
+				BE2AD357FD510782F32FE5C8 /* LiveActivityManager.swift in Sources */,
+				E9D165BC11A46329672690F8 /* LogTimeControl.swift in Sources */,
+				D6131078A550C7936FD9D0D6 /* Models.swift in Sources */,
+				98ECB27448252D38BE27C1BD /* RunningActivityWidget.swift in Sources */,
+				7D2FA1A8AD8274271E0A27E9 /* SharedIntents.swift in Sources */,
+				869F93CA21FDC5A080A8D772 /* SharedStore.swift in Sources */,
+				59973C3454E65B639E189B6C /* TimeTrackerWidgetBundle.swift in Sources */,
+				3E15F3923C9ED19AFCB452BA /* TimerActivityAttributes.swift in Sources */,
+				D3DB9E6B1A557535C7926000 /* TimerLiveActivity.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		4B630F2D4CC7EBCEB8C37DD0 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A744B6A5E8AAE637CCFEE76F /* TimeTrackerWidgets */;
+			targetProxy = 9D8C5BA6B5713F4A2EE04331 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		24FB7FCC69DB17FBB697CB8B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "$(BUNDLE_ID_PREFIX).tests";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		3B1C3270C260CABE73B967AD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "$(BUNDLE_ID_PREFIX).tests";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+		3D7E389FAB30015F76E35234 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_ENTITLEMENTS = Config/TimeTrackerWidgets.entitlements;
+				INFOPLIST_FILE = "Config/TimeTrackerWidgets-Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "$(BUNDLE_ID_PREFIX).widgets";
+				PRODUCT_NAME = TimeTrackerWidgets;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		3F0CADF0FC1FD47F5CD4BDC7 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_ENTITLEMENTS = Config/TimeTrackerWidgets.entitlements;
+				INFOPLIST_FILE = "Config/TimeTrackerWidgets-Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "$(BUNDLE_ID_PREFIX).widgets";
+				PRODUCT_NAME = TimeTrackerWidgets;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+		67FBDD31C4A3CD8AEA922CC6 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 5F37B9F1ACCF5DFCAFD52D75 /* Base.xcconfig */;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		B10096AAAB51DDA48B1D3A6C /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 5F37B9F1ACCF5DFCAFD52D75 /* Base.xcconfig */;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+		BFE1C801457EAFCBCB13FC7D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Config/TimeTracker.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				ENABLE_PREVIEWS = YES;
+				INFOPLIST_FILE = "Config/TimeTracker-Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "$(BUNDLE_ID_PREFIX)";
+				PRODUCT_NAME = TimeTracker;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		F6D3A37326A7571598C9955C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Config/TimeTracker.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				ENABLE_PREVIEWS = YES;
+				INFOPLIST_FILE = "Config/TimeTracker-Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "$(BUNDLE_ID_PREFIX)";
+				PRODUCT_NAME = TimeTracker;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		5ED29127D0F60DFFFE4973DB /* Build configuration list for PBXNativeTarget "TimeTrackerTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				24FB7FCC69DB17FBB697CB8B /* Debug */,
+				3B1C3270C260CABE73B967AD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		CA02C8256257C68402D03771 /* Build configuration list for PBXProject "TimeTracker" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				67FBDD31C4A3CD8AEA922CC6 /* Debug */,
+				B10096AAAB51DDA48B1D3A6C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		EC72AFFF1717275E32214FAD /* Build configuration list for PBXNativeTarget "TimeTrackerWidgets" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3D7E389FAB30015F76E35234 /* Debug */,
+				3F0CADF0FC1FD47F5CD4BDC7 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		F77AABD9D94F31297D9AFBDF /* Build configuration list for PBXNativeTarget "TimeTracker" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BFE1C801457EAFCBCB13FC7D /* Debug */,
+				F6D3A37326A7571598C9955C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		A5E58CCA1B2852F118AB0EA9 /* XCLocalSwiftPackageReference "Packages/TimeTrackerCore" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Packages/TimeTrackerCore;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		4E2CE78DBF5D6CB6CEE48996 /* TimeTrackerCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = TimeTrackerCore;
+		};
+		87F3937957643873D88E4BC2 /* TimeTrackerCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = TimeTrackerCore;
+		};
+		9C2749136A58FD0C62FAA071 /* TimeTrackerCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = TimeTrackerCore;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = 0ABDC2A596C9BAAF0F20A631 /* Project object */;
+}

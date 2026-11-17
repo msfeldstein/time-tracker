@@ -224,7 +224,7 @@ public enum CommandParser {
         return .stop(activity: activity)
     }
 
-    static func cleanActivity(_ input: [String]) -> String {
+    public static func cleanActivity(_ input: [String]) -> String {
         var words = input
         var changed = true
         while changed {

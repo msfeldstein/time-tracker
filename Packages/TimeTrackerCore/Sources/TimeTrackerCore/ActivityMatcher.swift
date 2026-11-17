@@ -46,14 +46,14 @@ public enum ActivityMatcher {
         "do", "doing", "i", "i'm", "im",
     ]
 
-    static func keyTokens(_ text: String) -> [String] {
+    public static func keyTokens(_ text: String) -> [String] {
         let words = TextNormalizer.words(TextNormalizer.normalize(text))
         let meaningful = words.filter { !stopWords.contains($0) }
         return (meaningful.isEmpty ? words : meaningful).map(stem)
     }
 
     /// Very small English stemmer: enough to match "dishes"/"dish", "washing"/"wash", "cleaned"/"clean".
-    static func stem(_ word: String) -> String {
+    public static func stem(_ word: String) -> String {
         var w = word
         if w.hasSuffix("'s") { w.removeLast(2) }
         for suffix in ["ing", "ies", "es", "ed", "s"] where w.count > suffix.count + 2 && w.hasSuffix(suffix) {
