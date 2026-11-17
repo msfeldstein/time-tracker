@@ -1,0 +1,76 @@
+name: iOS build and tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  core-tests:
+    name: Parser tests (Swift package)
+    runs-on: macos-26
+    steps:
+      - uses: actions/checkout@v4
+      - name: Swift version
+        run: swift --version
+      - name: Run TimeTrackerCore tests
+        working-directory: Packages/TimeTrackerCore
+        run: swift test
+
+  build:
+    name: Build app + widget (iOS Simulator) and run unit tests
+    runs-on: macos-26
+    steps:
+      - uses: actions/checkout@v4
+      - name: Xcode version
+        run: xcodebuild -version
+      - name: Check the committed project matches project.yml
+        run: |
+          brew install xcodegen
+          xcodegen generate
+          git diff --exit-code -- TimeTracker.xcodeproj || {
+            echo "::warning::TimeTracker.xcodeproj differs from 'xcodegen generate' output; regenerate and commit."
+          }
+      - name: Build for iOS Simulator (no signing)
+        run: |
+          set -o pipefail
+          xcodebuild build \
+            -project TimeTracker.xcodeproj \
+            -scheme TimeTracker \
+            -destination 'generic/platform=iOS Simulator' \
+            CODE_SIGNING_ALLOWED=NO \
+            | tee build.log | grep -E "error:|warning:|BUILD (SUCCEEDED|FAILED)" || true
+          grep -q "BUILD SUCCEEDED" build.log
+      - name: Run unit tests on a simulator
+        run: |
+          set -o pipefail
+          UDID=$(xcrun simctl list devices available -j | python3 -c '
+          import json, sys
+          data = json.load(sys.stdin)["devices"]
+          ios = sorted((k for k in data if "iOS" in k), reverse=True)
+          for runtime in ios:
+              for d in data[runtime]:
+                  if d["name"].startswith("iPhone"):
+                      print(d["udid"]); sys.exit()
+          ')
+          echo "Using simulator $UDID"
+          xcodebuild test \
+            -project TimeTracker.xcodeproj \
+            -scheme TimeTracker \
+            -destination "id=$UDID" \
+            CODE_SIGNING_ALLOWED=NO \
+            | tee test.log | grep -E "error:|Test Suite|Executed|TEST (SUCCEEDED|FAILED)" || true
+          grep -q "TEST SUCCEEDED" test.log
+      - name: Upload logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: xcodebuild-logs
+          path: |
+            build.log
+            test.log
+          if-no-files-found: ignore
