@@ -17,6 +17,16 @@ public enum ActivityMatcher {
         return best?.index
     }
 
+    /// True when the best match is weak, or a different candidate scores almost as well.
+    public static func isLowConfidence(query: String, chosen: Int, in candidates: [String]) -> Bool {
+        let best = score(query, candidates[chosen])
+        if best < 0.8 { return true }
+        let chosenKey = keyTokens(candidates[chosen])
+        return candidates.indices.contains { index in
+            index != chosen && keyTokens(candidates[index]) != chosenKey && best - score(query, candidates[index]) < 0.1
+        }
+    }
+
     /// Similarity in 0...1.
     public static func score(_ a: String, _ b: String) -> Double {
         let left = keyTokens(a)

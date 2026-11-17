@@ -24,6 +24,12 @@ public enum PlannedAction: Equatable, Sendable {
     case nothingRunning
 }
 
+public struct Resolution: Equatable, Sendable {
+    public let actions: [PlannedAction]
+    /// Stops chosen by a weak or ambiguous fuzzy match; worth a second opinion from the LLM.
+    public let lowConfidenceStops: [UUID]
+}
+
 /// Turns parsed commands into concrete actions against the currently running activities.
 /// Pure logic so it can be unit tested without SwiftData.
 public enum CommandResolver {
@@ -32,8 +38,17 @@ public enum CommandResolver {
         running: [RunningActivity],
         rawText: String
     ) -> [PlannedAction] {
+        resolveWithConfidence(commands, running: running, rawText: rawText).actions
+    }
+
+    public static func resolveWithConfidence(
+        _ commands: [ParsedCommand],
+        running: [RunningActivity],
+        rawText: String
+    ) -> Resolution {
         var open = running.sorted { $0.startedAt > $1.startedAt }
         var actions: [PlannedAction] = []
+        var lowConfidence: [UUID] = []
 
         func stop(at index: Int) {
             actions.append(.stop(id: open[index].id))
@@ -69,6 +84,9 @@ public enum CommandResolver {
                         if let index = open.firstIndex(where: { $0.id == id }) { stop(at: index) }
                     }
                 } else if let index = ActivityMatcher.bestMatch(for: query, in: names) {
+                    if ActivityMatcher.isLowConfidence(query: query, chosen: index, in: names) {
+                        lowConfidence.append(open[index].id)
+                    }
                     stop(at: index)
                 } else {
                     actions.append(.noMatch(query: query, text: rawText))
@@ -84,6 +102,6 @@ public enum CommandResolver {
                 actions.append(.note(text: text))
             }
         }
-        return actions
+        return Resolution(actions: actions, lowConfidenceStops: lowConfidence)
     }
 }
