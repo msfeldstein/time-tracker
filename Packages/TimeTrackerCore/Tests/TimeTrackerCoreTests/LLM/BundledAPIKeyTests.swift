@@ -14,7 +14,7 @@ final class BundledAPIKeyTests: XCTestCase {
     }
 
     func testDashesAndUnderscoresSurvive() {
-        XCTAssertEqual(BundledAPIKey.sanitize("sk-ant-fake_key-with_mixed-Chars09"), "sk-ant-fake_key-with_mixed-Chars09")
+        XCTAssertEqual(BundledAPIKey.sanitize("sk-ant-fa_ke-Key_09"), "sk-ant-fa_ke-Key_09")
     }
 
     func testWhitespaceAndQuotesAreTrimmed() {
