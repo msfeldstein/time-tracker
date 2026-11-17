@@ -68,20 +68,6 @@ targets:
         SKIP_INSTALL: YES
         APPLICATION_EXTENSION_API_ONLY: YES
 
-  TimeTrackerTests:
-    type: bundle.unit-test
-    platform: iOS
-    sources:
-      - path: Packages/TimeTrackerCore/Tests/TimeTrackerCoreTests
-        group: TimeTrackerTests
-    dependencies:
-      - package: TimeTrackerCore
-    settings:
-      base:
-        PRODUCT_BUNDLE_IDENTIFIER: $(BUNDLE_ID_PREFIX).tests
-        TARGETED_DEVICE_FAMILY: "1"
-        GENERATE_INFOPLIST_FILE: YES
-
 schemes:
   TimeTracker:
     build:
@@ -93,7 +79,10 @@ schemes:
     test:
       config: Debug
       gatherCoverageData: false
+      # Parser tests live only in the local package (Packages/TimeTrackerCore/Tests) and run through
+      # its own test target; don't add those files to an app-project target as well, because Xcode
+      # rejects a file reference that belongs to more than one group.
       targets:
-        - TimeTrackerTests
+        - package: TimeTrackerCore/TimeTrackerCoreTests
     archive:
       config: Release

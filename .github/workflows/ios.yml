@@ -27,7 +27,18 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Xcode version
-        run: xcodebuild -version
+        run: |
+          xcodebuild -version
+          ls -d /Applications/Xcode*.app
+      - name: Check the project structure and that xcodebuild can read it
+        run: |
+          python3 scripts/check_xcodeproj.py TimeTracker.xcodeproj
+          xcodebuild -list -project TimeTracker.xcodeproj
+          # Also try the newest installed Xcode (e.g. 27.x) if the runner has it.
+          NEWEST=$(ls -d /Applications/Xcode_*.app | sort -V | tail -1)
+          echo "Newest Xcode on runner: $NEWEST"
+          DEVELOPER_DIR="$NEWEST/Contents/Developer" xcodebuild -version
+          DEVELOPER_DIR="$NEWEST/Contents/Developer" xcodebuild -list -project TimeTracker.xcodeproj
       - name: Build for iOS Simulator (no signing)
         run: |
           set -o pipefail
@@ -97,8 +108,7 @@ jobs:
           grep -q "TEST SUCCEEDED" test.log
       - name: Check the committed project matches project.yml
         run: |
-          brew install xcodegen
-          xcodegen generate
+          ./scripts/generate-project.sh
           git diff --exit-code -- TimeTracker.xcodeproj || {
             echo "::warning::TimeTracker.xcodeproj differs from 'xcodegen generate' output; regenerate and commit."
           }

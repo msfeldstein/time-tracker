@@ -36,7 +36,7 @@ A voice-first iPhone app for logging how long everyday tasks take. Tap the mic (
 | App Intents: Start Activity (Siri asks "What are you starting?"), Stop Activity, Log by Voice, plus Siri phrases | `App/Intents/`, `Shared/SharedIntents.swift` |
 | Today view with durations (running ones update live), a daily total, and fixes: rename, change start and end times, mark as stopped, delete, add a forgotten entry. Anything over 3 hours is flagged "Forgot to stop?". | `App/Views/TodayView.swift`, `App/Views/EditEntryView.swift` |
 | Milestone 2 hook: an `LLMService` protocol, a `ClaudeHaikuService` stub, and an Anthropic API key field in Settings (stored in the Keychain) | `Packages/TimeTrackerCore/Sources/TimeTrackerCore/LLMService.swift`, `App/LLM/` |
-| Parser, matcher and resolver unit tests (46 tests) | `Packages/TimeTrackerCore/Tests/` |
+| Parser, matcher and resolver unit tests (46 tests), run with `swift test` or ⌘U | `Packages/TimeTrackerCore/Tests/` |
 
 ### Things she can say
 
@@ -65,7 +65,17 @@ git clone https://github.com/msfeldstein/time-tracker.git
 cd time-tracker
 ```
 
-The Xcode project (`TimeTracker.xcodeproj`) is committed, so you don't need XcodeGen to build. If you change `project.yml`, run `brew install xcodegen && xcodegen generate`.
+The Xcode project (`TimeTracker.xcodeproj`) is committed, so you don't need XcodeGen to build: open it in Xcode 26 or later.
+
+If you change `project.yml`, regenerate the project. No Homebrew is needed:
+
+```bash
+./scripts/generate-project.sh
+```
+
+The script downloads a pinned XcodeGen release (2.47.0) from GitHub into `.build/` (git-ignored) the first time, runs `xcodegen generate`, then runs `scripts/check_xcodeproj.py`. That check catches project problems Xcode refuses to open, such as a file that belongs to more than one group. Other ways to get XcodeGen: download `xcodegen.zip` from the [releases page](https://github.com/yonaskolb/XcodeGen/releases) and run `xcodegen/bin/xcodegen generate`, or build it from source with `git clone https://github.com/yonaskolb/XcodeGen && cd XcodeGen && swift run xcodegen --spec /path/to/time-tracker/project.yml`.
+
+To confirm the project is readable, run `xcodebuild -list -project TimeTracker.xcodeproj`. It should list the targets `TimeTracker` and `TimeTrackerWidgets` and the scheme `TimeTracker`.
 
 ### 2. Change the bundle ID and team (one file)
 
@@ -90,7 +100,7 @@ This produces:
 
 You can also edit `Config/Base.xcconfig` directly. `Local.xcconfig` just keeps your personal values out of git.
 
-**Finding the team ID:** in Xcode, go to **Settings › Accounts**, click **+**, and sign in with your Apple ID. A "(Personal Team)" entry appears. The easiest way to set the team is to leave `DEVELOPMENT_TEAM` blank and, in Xcode, select the **TimeTracker** target, then **Signing & Capabilities**, then **Team: <Your Name> (Personal Team)**. Do the same for the **TimeTrackerWidgets** target. Selections made in the UI are lost if you later run `xcodegen generate`. To make it stick, copy the 10-character ID from **Build Settings › Development Team** into `Local.xcconfig`.
+**Finding the team ID:** in Xcode, go to **Settings › Accounts**, click **+**, and sign in with your Apple ID. A "(Personal Team)" entry appears. The easiest way to set the team is to leave `DEVELOPMENT_TEAM` blank and, in Xcode, select the **TimeTracker** target, then **Signing & Capabilities**, then **Team: <Your Name> (Personal Team)**. Do the same for the **TimeTrackerWidgets** target. Selections made in the UI are lost if you later regenerate the project. To make it stick, copy the 10-character ID from **Build Settings › Development Team** into `Local.xcconfig`.
 
 Leave **Automatically manage signing** on. Don't add capabilities by hand: both targets already declare the App Group in `Config/*.entitlements`, and Xcode registers it for you.
 
@@ -232,7 +242,7 @@ Packages/TimeTrackerCore/   Platform-independent parser, matcher, resolver, form
 ## Development
 
 - **Parser tests (any Mac, or Linux):** `cd Packages/TimeTrackerCore && swift test`
-- **In Xcode:** **⌘U** runs the `TimeTrackerTests` target, which compiles the same test files.
+- **In Xcode:** **⌘U** on the `TimeTracker` scheme runs the package's own `TimeTrackerCoreTests` target in an iOS Simulator. You can also open `Packages/TimeTrackerCore/Package.swift` on its own and test the `TimeTrackerCore` scheme. The test files belong only to the package. Don't add them to an app-project target too: Xcode 27 refuses to open a project where a file is in more than one group.
 - **CI:** `.github/workflows/ios.yml` runs the package tests and builds the app and widget for the iOS Simulator with Xcode 26 on GitHub's macOS runners, unsigned.
 - The scheme builds both the app and the widget extension. To debug the widget or Live Activity, run the app, then use **Debug › Attach to Process by PID or Name › TimeTrackerWidgets**.
 

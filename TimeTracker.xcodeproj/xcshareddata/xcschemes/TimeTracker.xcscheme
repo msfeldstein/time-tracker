@@ -5,6 +5,7 @@
    <BuildAction
       parallelizeBuildables = "YES"
       buildImplicitDependencies = "YES"
+      buildArchitectures = "Automatic"
       runPostActionsOnFailure = "NO">
       <BuildActionEntries>
          <BuildActionEntry
@@ -58,10 +59,10 @@
             parallelizable = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "3F88763213538E5BD6C12E5D"
-               BuildableName = "TimeTrackerTests.xctest"
-               BlueprintName = "TimeTrackerTests"
-               ReferencedContainer = "container:TimeTracker.xcodeproj">
+               BlueprintIdentifier = "TimeTrackerCoreTests"
+               BuildableName = "TimeTrackerCoreTests"
+               BlueprintName = "TimeTrackerCoreTests"
+               ReferencedContainer = "container:Packages/TimeTrackerCore">
             </BuildableReference>
          </TestableReference>
       </Testables>
