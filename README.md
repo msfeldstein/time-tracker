@@ -18,10 +18,11 @@ A voice-first iPhone app for logging how long everyday tasks take. Tap the mic (
 4. [Every 7 days: re-sign the app](#every-7-days-re-sign-the-app)
 5. [Set up the Lock Screen widget, Control, Back Tap and Siri](#set-up-the-lock-screen-widget-control-back-tap-and-siri)
 6. [Turn on the AI features (optional)](#turn-on-the-ai-features-optional)
-7. [Free Apple ID limitations](#free-apple-id-limitations)
-8. [How it works](#how-it-works)
-9. [Development](#development)
-10. [Troubleshooting](#troubleshooting)
+7. [Background image](#background-image)
+8. [Free Apple ID limitations](#free-apple-id-limitations)
+9. [How it works](#how-it-works)
+10. [Development](#development)
+11. [Troubleshooting](#troubleshooting)
 
 ---
 
@@ -37,7 +38,8 @@ A voice-first iPhone app for logging how long everyday tasks take. Tap the mic (
 | Lock Screen widgets (circular, rectangular, inline). Tapping one opens the app already listening. | `Widgets/RunningActivityWidget.swift` |
 | Control Center / Lock Screen control "Log Time" that opens the app already listening | `Widgets/LogTimeControl.swift` |
 | App Intents: Start Activity (Siri asks "What are you starting?"), Stop Activity, Log by Voice, plus Siri phrases | `App/Intents/`, `Shared/SharedIntents.swift` |
-| Today view with durations (running ones update live), a daily total, and fixes: rename, change start and end times, mark as stopped, delete, add a forgotten entry. Anything over 3 hours is flagged "Forgot to stop?". | `App/Views/TodayView.swift`, `App/Views/EditEntryView.swift` |
+| A minimal main screen: no title or hint text, just the mic and any running timers (nothing shows when nothing is running). It can have an optional full-bleed background image (see [Background image](#background-image)). | `App/Views/HomeView.swift` |
+| Today's entries, in **Summary › Today**, with durations (running ones update live) and fixes: rename, change category, start and end times, mark as stopped, delete, add a forgotten entry. Anything over 3 hours is flagged "Forgot to stop?". | `App/Views/TodayEntriesSection.swift`, `App/Views/EditEntryView.swift` |
 | Unit tests for the parser, matcher and resolver, run with `swift test` or ⌘U | `Packages/TimeTrackerCore/Tests/` |
 
 ### Things she can say
@@ -50,7 +52,7 @@ A voice-first iPhone app for logging how long everyday tasks take. Tap the mic (
 | "Stop everything", "I'm done for the day" | Stops all timers |
 | "Done with dishes and starting laundry" | Both, in order |
 | "Starting dishes" while Dishes is already running | Nothing new starts; she's told it's already running |
-| Anything else ("remember to buy soap") | Saved as a note in Today. Never dropped. |
+| Anything else ("remember to buy soap") | Saved as a note in Summary › Today. Never dropped. |
 
 Several timers can run at the same time.
 
@@ -64,8 +66,8 @@ All of it sits behind the `LLMService` protocol and uses Anthropic's current Hai
 | --- | --- |
 | **Auto-categorization** | Each finished activity gets a category (Chores, Cooking, Kids, Errands, Work, Self-care, ...) with no setup. Each request includes the list of existing categories, so names stay stable across days. Every normalized activity name ("the dishes" and "dish" count as one) is cached with its category, so a repeat activity never triggers a call. New activities are sent in batches of up to 25. Picking a category by hand in the edit screen overrides the cache from then on. |
 | **Second opinion on unclear speech** | When the on-device parser produces a note, can't match a stop, or picks a stop from a weak or ambiguous match, the transcript and the activities that were running are sent to Haiku. The local result is applied first and the raw words are always saved. Haiku's answer is applied as a **reversible interpretation**: affected rows say "Understood by AI · tap to undo", and Undo restores exactly what the app first did. Anything below 60% confidence is ignored. |
-| **Forgotten stops** | A timer running far longer than her usual length for that activity (3 times the median, at least an hour; 3 hours with no history) gets a suggested end time. One shows immediately from her history, offline. With AI on, Haiku refines it using past sessions and what she started afterwards. Today shows **"Probably ended around 4:15 PM · Use suggestion"**. Nothing changes until she taps it. |
-| **Summary tab** | Today and This Week: a total, a Swift Charts bar chart of time per category, and a short, warm note from Haiku. Each note is cached with a fingerprint of the finished data and regenerated only when that data changes. Without AI, a plain local note is shown instead. |
+| **Forgotten stops** | A timer running far longer than her usual length for that activity (3 times the median, at least an hour; 3 hours with no history) gets a suggested end time. One shows immediately from her history, offline. With AI on, Haiku refines it using past sessions and what she started afterwards. Summary › Today shows **"Probably ended around 4:15 PM · Use suggestion"**. Nothing changes until she taps it. |
+| **Summary tab** | Today and This Week: a total, a Swift Charts bar chart of time per category, and a short, warm note from Haiku. Today also lists the day's entries for fixing. Each note is cached with a fingerprint of the finished data and regenerated only when that data changes. Without AI, a plain local note is shown instead. |
 | **Privacy and reliability** | Only activity names, times, categories and the words of unclear voice notes are sent. Never audio, and never database IDs. With AI off, with no key, or offline, everything else keeps working. Pending AI work waits in the store, retries with exponential backoff, and resumes when the network comes back. |
 
 The Settings screen has the AI toggle, a one-line disclosure of what's sent, the key field, **Test key**, and a status line (for example "Up to date" or "Can't reach Anthropic... Next try 4:10 PM").
@@ -228,6 +230,10 @@ On her iPhone, go to **Time Tracker › Track tab › gear icon › Smart featur
 
 Either way, leave **Use AI (Claude Haiku)** on. Turn it off at any time to go back to on-device only. The key is only ever sent to `api.anthropic.com`.
 
+## Background image
+
+The main screen can show a full-bleed background image. `App/Assets.xcassets/AppBackground.imageset` ships empty, so by default nothing is drawn. To add one, open the asset catalog in Xcode and drag an image into **AppBackground**; a single large image in the 3x slot is enough. Portrait, at least 1290 × 2796 px, works best. The image fills the screen edge to edge behind everything, including under the status bar and tab bar, and is cropped to fill. While it's present, the running-timer cards and the listening status sit on frosted panels so the text stays readable. Avoid committing large personal photos: the repository is public.
+
 ## Free Apple ID limitations
 
 Researched against Apple's [Supported capabilities (iOS)](https://developer.apple.com/help/account/reference/supported-capabilities-ios) table (the "Apple Developer" column means a free account) and the [Personal Team rules](https://developer.apple.com/help/account/basics/about-your-developer-account/).
@@ -289,7 +295,7 @@ EntryService.capture(text)
 project.yml                 XcodeGen spec (source of truth for the project)
 TimeTracker.xcodeproj       Generated from project.yml, committed for convenience
 Config/                     xcconfig (bundle ID prefix, team), Info.plists, entitlements
-App/                        App target: SwiftUI views (Track, Today, Summary, Settings), speech, Siri intents, AI worker
+App/                        App target: SwiftUI views (Track, Summary with today's entries, Settings), speech, Siri intents, AI worker
 Shared/                     Compiled into app + widget: SwiftData models, store, EntryService,
                             Live Activity attributes/manager, widget-facing intents
 Widgets/                    Widget extension: Lock Screen widget, Live Activity, Control

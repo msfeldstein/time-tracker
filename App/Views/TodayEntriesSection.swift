@@ -2,11 +2,13 @@ import SwiftData
 import SwiftUI
 import TimeTrackerCore
 
-struct TodayView: View {
+/// Today's entries with fix-ups (edit, stop, delete, add a forgotten one). Shown in Summary › Today.
+struct TodayEntriesSection: View {
     @Query private var allEntries: [TimeEntry]
     @Query(filter: #Predicate<CaptureRecord> { $0.aiStatusRaw == "pending" }) private var pendingCaptures: [CaptureRecord]
     @State private var editing: TimeEntry?
     @State private var addingEntry = false
+    @State private var deleting: TimeEntry?
 
     init(day: Date = Date()) {
         let start = Calendar.current.startOfDay(for: day)
@@ -25,58 +27,55 @@ struct TodayView: View {
 
     var body: some View {
         let pendingIDs = Set(pendingCaptures.map(\.id))
-        TimelineView(.periodic(from: .now, by: 30)) { context in
-            List {
-                Section {
-                    TotalRow(entries: entries, now: context.date)
+        VStack(alignment: .leading, spacing: 10) {
+            HStack {
+                Text("Today\u{2019}s entries")
+                    .font(.title3.weight(.semibold))
+                Spacer()
+                Button {
+                    addingEntry = true
+                } label: {
+                    Label("Add", systemImage: "plus")
+                        .font(.headline)
                 }
+                .buttonStyle(.bordered)
+                .buttonBorderShape(.capsule)
+                .accessibilityLabel("Add something you forgot to log")
+            }
 
-                if entries.isEmpty {
-                    Section {
-                        Text("Nothing logged yet today.")
-                            .font(.title3)
-                            .foregroundStyle(.secondary)
-                    }
-                } else {
-                    Section {
+            if entries.isEmpty {
+                Text("Nothing logged yet today.")
+                    .font(.body)
+                    .foregroundStyle(.secondary)
+            } else {
+                TimelineView(.periodic(from: .now, by: 30)) { context in
+                    VStack(spacing: 8) {
                         ForEach(entries) { entry in
                             EntryRow(
                                 entry: entry,
                                 now: context.date,
                                 isAskingAI: entry.captureID.map { pendingIDs.contains($0) } ?? false
                             )
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 6)
+                            .background(Color(uiColor: .secondarySystemBackground), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
                             .onTapGesture { editing = entry }
-                            .swipeActions(edge: .trailing, allowsFullSwipe: false) {
-                                Button(role: .destructive) {
-                                    Task { await EntryService.shared.delete(entry) }
-                                } label: {
-                                    Label("Delete", systemImage: "trash")
-                                }
+                            .contextMenu {
+                                Button("Edit", systemImage: "pencil") { editing = entry }
                                 if entry.isRunning {
-                                    Button {
+                                    Button("Stop now", systemImage: "stop.fill") {
                                         let id = entry.id
                                         Task { await EntryService.shared.stop(entryID: id) }
-                                    } label: {
-                                        Label("Stop", systemImage: "stop.fill")
                                     }
-                                    .tint(.orange)
                                 }
+                                Button("Delete", systemImage: "trash", role: .destructive) { deleting = entry }
                             }
                         }
-                    } footer: {
-                        Text("Tap an entry to fix its name or times. Swipe left to stop or delete.")
                     }
                 }
-            }
-        }
-        .navigationTitle("Today")
-        .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
-                Button {
-                    addingEntry = true
-                } label: {
-                    Label("Add", systemImage: "plus")
-                }
+                Text("Tap an entry to fix its name, category or times. Touch and hold to stop or delete.")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
             }
         }
         .sheet(item: $editing) { entry in
@@ -85,30 +84,18 @@ struct TodayView: View {
         .sheet(isPresented: $addingEntry) {
             AddEntryView()
         }
-    }
-}
-
-private struct TotalRow: View {
-    let entries: [TimeEntry]
-    let now: Date
-
-    var body: some View {
-        let start = Calendar.current.startOfDay(for: now)
-        let total = entries
-            .filter { $0.kind == .activity }
-            .reduce(0.0) { sum, entry in
-                let from = max(entry.startedAt, start)
-                return sum + max(0, (entry.endedAt ?? now).timeIntervalSince(from))
+        .confirmationDialog(
+            "Delete this entry?",
+            isPresented: Binding(get: { deleting != nil }, set: { if !$0 { deleting = nil } }),
+            titleVisibility: .visible
+        ) {
+            Button("Delete", role: .destructive) {
+                if let entry = deleting {
+                    Task { await EntryService.shared.delete(entry) }
+                }
+                deleting = nil
             }
-        HStack {
-            Text("Tracked today")
-                .font(.headline)
-            Spacer()
-            Text(DurationFormatting.short(total))
-                .font(.title2.weight(.bold).monospacedDigit())
         }
-        .accessibilityElement(children: .combine)
-        .accessibilityValue(DurationFormatting.spoken(total))
     }
 }
 

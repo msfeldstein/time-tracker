@@ -3,7 +3,6 @@ import SwiftUI
 import TimeTrackerCore
 
 enum HomeRoute: Hashable {
-    case today
     case settings
 }
 
@@ -20,7 +19,7 @@ struct HomeView: View {
     var body: some View {
         NavigationStack(path: $path) {
             VStack(spacing: 20) {
-                StatusPanel(phase: voice.phase, transcript: voice.transcript)
+                StatusPanel(phase: voice.phase, transcript: voice.transcript, overBackground: AppBackground.isPresent)
                     .frame(maxWidth: .infinity, minHeight: 110, alignment: .center)
 
                 MicButton(phase: voice.phase) {
@@ -29,24 +28,14 @@ struct HomeView: View {
 
                 RunningList(entries: running)
                     .frame(maxHeight: .infinity, alignment: .top)
-
-                Button {
-                    path.append(.today)
-                } label: {
-                    Label("Today", systemImage: "list.bullet.rectangle")
-                        .font(.title3.weight(.semibold))
-                        .frame(maxWidth: .infinity, minHeight: 52)
-                }
-                .buttonStyle(.bordered)
-                .controlSize(.large)
             }
             .padding(.horizontal, 20)
             .padding(.bottom, 12)
-            .navigationTitle("Time Tracker")
-            .navigationBarTitleDisplayMode(.inline)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background { AppBackground() }
+            .toolbarBackground(.hidden, for: .navigationBar)
             .navigationDestination(for: HomeRoute.self) { route in
                 switch route {
-                case .today: TodayView()
                 case .settings: SettingsView()
                 }
             }
@@ -71,28 +60,53 @@ struct HomeView: View {
 }
 
 extension HomeView {
-    /// Debug launch arguments used by CI screenshots: `-TTOpenToday`, `-TTOpenSettings`.
+    /// Debug launch argument used by CI screenshots: `-TTOpenSettings`.
     nonisolated static func initialPath() -> [HomeRoute] {
         #if DEBUG
-        let arguments = ProcessInfo.processInfo.arguments
-        if arguments.contains("-TTOpenToday") { return [.today] }
-        if arguments.contains("-TTOpenSettings") { return [.settings] }
+        if ProcessInfo.processInfo.arguments.contains("-TTOpenSettings") { return [.settings] }
         #endif
         return []
+    }
+}
+
+/// Optional full-bleed image from the "AppBackground" asset. The asset ships empty; drop an image
+/// into App/Assets.xcassets/AppBackground.imageset and it fills the screen behind the content.
+struct AppBackground: View {
+    static let isPresent = UIImage(named: "AppBackground") != nil
+
+    var body: some View {
+        if let image = UIImage(named: "AppBackground") {
+            Image(uiImage: image)
+                .resizable()
+                .scaledToFill()
+                .overlay(Color(uiColor: .systemBackground).opacity(0.15))
+                .ignoresSafeArea()
+                .accessibilityHidden(true)
+        }
     }
 }
 
 private struct StatusPanel: View {
     let phase: VoiceCaptureController.Phase
     let transcript: String
+    let overBackground: Bool
 
     var body: some View {
+        content
+            .padding(.horizontal, overBackground && phase != .idle ? 16 : 0)
+            .padding(.vertical, overBackground && phase != .idle ? 10 : 0)
+            .background {
+                if overBackground && phase != .idle {
+                    RoundedRectangle(cornerRadius: 18, style: .continuous).fill(.regularMaterial)
+                }
+            }
+    }
+
+    private var content: some View {
         Group {
             switch phase {
             case .idle:
-                Text("Tap the mic and say\n\u{201C}starting dishes\u{201D} or \u{201C}done with dishes\u{201D}")
-                    .font(.title3)
-                    .foregroundStyle(.secondary)
+                EmptyView()
             case .preparing:
                 Label("Getting ready\u{2026}", systemImage: "ellipsis")
                     .font(.title2)
@@ -129,13 +143,7 @@ private struct RunningList: View {
     let entries: [TimeEntry]
 
     var body: some View {
-        if entries.isEmpty {
-            Text("Nothing running")
-                .font(.headline)
-                .foregroundStyle(.tertiary)
-                .frame(maxWidth: .infinity)
-                .padding(.top, 8)
-        } else {
+        if !entries.isEmpty {
             ScrollView {
                 VStack(spacing: 10) {
                     ForEach(entries) { entry in
@@ -183,6 +191,6 @@ private struct RunningCard: View {
             .accessibilityLabel("Stop \(entry.name)")
         }
         .padding(14)
-        .background(.thinMaterial, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
+        .background(AppBackground.isPresent ? Material.regular : Material.thin, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
     }
 }

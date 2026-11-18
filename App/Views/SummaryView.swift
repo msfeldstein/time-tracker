@@ -8,22 +8,39 @@ struct SummaryView: View {
 
     var body: some View {
         NavigationStack {
-            ScrollView {
-                VStack(alignment: .leading, spacing: 20) {
-                    Picker("Period", selection: $period) {
-                        Text("Today").tag(SummaryPeriod.day)
-                        Text("This Week").tag(SummaryPeriod.week)
-                    }
-                    .pickerStyle(.segmented)
+            ScrollViewReader { proxy in
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 20) {
+                        Picker("Period", selection: $period) {
+                            Text("Today").tag(SummaryPeriod.day)
+                            Text("This Week").tag(SummaryPeriod.week)
+                        }
+                        .pickerStyle(.segmented)
 
-                    SummaryContent(spec: Self.spec(for: period, now: Date()))
-                        .id(period)
+                        SummaryContent(spec: Self.spec(for: period, now: Date()))
+                            .id(period)
+
+                        if period == .day {
+                            TodayEntriesSection()
+                                .id(Self.entriesAnchor)
+                        }
+                    }
+                    .padding(20)
                 }
-                .padding(20)
+                .task {
+                    #if DEBUG
+                    if ProcessInfo.processInfo.arguments.contains("-TTOpenToday") {
+                        try? await Task.sleep(for: .milliseconds(500))
+                        proxy.scrollTo(Self.entriesAnchor, anchor: .top)
+                    }
+                    #endif
+                }
             }
             .navigationTitle("Summary")
         }
     }
+
+    private static let entriesAnchor = "todayEntries"
 
     static func spec(for period: SummaryPeriod, now: Date) -> AIWorker.SummarySpec {
         let calendar = Calendar.current

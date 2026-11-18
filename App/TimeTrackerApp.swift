@@ -72,10 +72,11 @@ struct RootView: View {
             }
     }
 
-    /// Debug launch argument used by CI screenshots: `-TTOpenSummary`.
+    /// Debug launch arguments used by CI screenshots: `-TTOpenSummary`, `-TTOpenToday` (Summary scrolled to today's entries).
     nonisolated static func initialTab() -> RootTab {
         #if DEBUG
-        if ProcessInfo.processInfo.arguments.contains("-TTOpenSummary") { return .summary }
+        let arguments = ProcessInfo.processInfo.arguments
+        if arguments.contains("-TTOpenSummary") || arguments.contains("-TTOpenToday") { return .summary }
         #endif
         return .track
     }
