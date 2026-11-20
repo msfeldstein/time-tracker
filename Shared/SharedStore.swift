@@ -63,10 +63,10 @@ enum SharedStore {
 
 /// Lock Screen intents read and write the store while the phone is locked, so its files must use
 /// `completeUntilFirstUserAuthentication` (readable once she has unlocked after a restart), never
-/// `complete`. It's iOS's default class for app files, but it's set explicitly here because the
-/// `com.apple.developer.default-data-protection` entitlement can't be used: free Personal Team
-/// provisioning profiles reject it. New files (the SQLite -wal/-shm journals) inherit the
-/// directory's class.
+/// `complete`. It's set explicitly here because the `com.apple.developer.default-data-protection`
+/// entitlement can't be changed: free Personal Team provisioning profiles pin it to
+/// `NSFileProtectionComplete` and fail the build for any other value. New files (the SQLite
+/// -wal/-shm journals) inherit the directory's class.
 enum DataProtection {
     private static let logger = Logger(subsystem: "TimeTracker", category: "DataProtection")
     static let lockedAccessClass = FileProtectionType.completeUntilFirstUserAuthentication
@@ -91,16 +91,35 @@ enum DataProtection {
     }
 }
 
-/// Lightweight, nonisolated reads for the widget extension's timeline provider.
-enum SharedStoreReader {
-    static func runningActivities() -> [RunningSnapshot] {
-        let context = ModelContext(SharedStore.container)
-        let activity = EntryKind.activity.rawValue
-        let descriptor = FetchDescriptor<TimeEntry>(
-            predicate: #Predicate<TimeEntry> { $0.endedAt == nil && $0.kindRaw == activity },
-            sortBy: [SortDescriptor(\.startedAt, order: .reverse)]
-        )
-        let entries = (try? context.fetch(descriptor)) ?? []
-        return entries.map(RunningSnapshot.init)
+/// What's running, as a small JSON file in the App Group, for the widget's timeline provider.
+///
+/// The widget never opens the SwiftData store: WidgetKit runs the provider while the phone is
+/// locked, and Personal Team provisioning profiles give both targets
+/// `default-data-protection = NSFileProtectionComplete`, so files that don't have an explicit class
+/// can be unreadable then. This file is always written with an explicit
+/// `completeUntilFirstUserAuthentication` class, and any read failure just means "nothing running".
+enum RunningSnapshotFile {
+    private static let logger = Logger(subsystem: "TimeTracker", category: "RunningSnapshotFile")
+
+    private static var url: URL? {
+        guard let groupID = AppConfig.appGroupID,
+              let groupURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: groupID)
+        else { return nil }
+        return groupURL.appending(path: "RunningSnapshot.json")
+    }
+
+    static func write(_ running: [RunningSnapshot]) {
+        guard let url else { return }
+        do {
+            let data = try JSONEncoder().encode(running)
+            try data.write(to: url, options: [.atomic, .completeFileProtectionUntilFirstUserAuthentication])
+        } catch {
+            logger.error("Couldn't write running snapshot: \(error.localizedDescription, privacy: .public)")
+        }
+    }
+
+    static func read() -> [RunningSnapshot] {
+        guard let url, let data = try? Data(contentsOf: url) else { return [] }
+        return (try? JSONDecoder().decode([RunningSnapshot].self, from: data)) ?? []
     }
 }

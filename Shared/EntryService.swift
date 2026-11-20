@@ -266,8 +266,10 @@ final class EntryService {
     // MARK: - Side effects
 
     func refreshSurfaces() async {
+        let running = runningEntries().map(RunningSnapshot.init)
+        RunningSnapshotFile.write(running)
         WidgetCenter.shared.reloadAllTimelines()
-        await LiveActivityManager.sync(running: runningEntries().map(RunningSnapshot.init))
+        await LiveActivityManager.sync(running: running)
         onChange?()
     }
 

@@ -9,26 +9,32 @@ struct RunningTimelineEntry: TimelineEntry {
         date: Date(),
         running: [RunningSnapshot(id: UUID(), name: "Dishes", startedAt: Date().addingTimeInterval(-754))]
     )
+
+    /// Nothing running: the mic and "Log time". Contains no private data.
+    static var generic: RunningTimelineEntry {
+        RunningTimelineEntry(date: Date(), running: [])
+    }
+
+    /// Reads the file the app writes after every change; never opens the SwiftData store, so it
+    /// works (or quickly falls back to `generic`) while the phone is locked.
+    static var current: RunningTimelineEntry {
+        RunningTimelineEntry(date: Date(), running: RunningSnapshotFile.read())
+    }
 }
 
 struct RunningProvider: TimelineProvider {
     func placeholder(in context: Context) -> RunningTimelineEntry {
-        .sample
+        .generic
     }
 
     func getSnapshot(in context: Context, completion: @escaping (RunningTimelineEntry) -> Void) {
-        if context.isPreview {
-            completion(.sample)
-        } else {
-            completion(RunningTimelineEntry(date: Date(), running: SharedStoreReader.runningActivities()))
-        }
+        completion(context.isPreview ? .sample : .current)
     }
 
     func getTimeline(in context: Context, completion: @escaping (Timeline<RunningTimelineEntry>) -> Void) {
         // The app reloads timelines after every change; the timer text updates itself, so a
         // slow refresh is only a safety net.
-        let entry = RunningTimelineEntry(date: Date(), running: SharedStoreReader.runningActivities())
-        completion(Timeline(entries: [entry], policy: .after(Date().addingTimeInterval(30 * 60))))
+        completion(Timeline(entries: [.current], policy: .after(Date().addingTimeInterval(30 * 60))))
     }
 }
 
@@ -53,20 +59,35 @@ struct RunningActivityWidget: Widget {
 
 struct RunningWidgetView: View {
     @Environment(\.widgetFamily) private var family
+    @Environment(\.redactionReasons) private var redactionReasons
     let entry: RunningTimelineEntry
 
     var body: some View {
-        switch family {
-        case .accessoryCircular:
-            circular
-        case .accessoryInline:
-            inline
-        default:
-            rectangular
+        if redactionReasons.isEmpty {
+            content(entry)
+        } else {
+            // The system asks for a redacted render for the locked Lock Screen and for
+            // placeholders. Show the generic mic and "Log time" instead of gray boxes: it has no
+            // private data, and tapping it still runs LogByVoiceIntent without unlocking.
+            content(.generic)
+                .privacySensitive(false)
+                .unredacted()
         }
     }
 
-    private var circular: some View {
+    @ViewBuilder
+    private func content(_ entry: RunningTimelineEntry) -> some View {
+        switch family {
+        case .accessoryCircular:
+            circular(entry)
+        case .accessoryInline:
+            inline(entry)
+        default:
+            rectangular(entry)
+        }
+    }
+
+    private func circular(_ entry: RunningTimelineEntry) -> some View {
         ZStack {
             AccessoryWidgetBackground()
             VStack(spacing: 0) {
@@ -83,7 +104,7 @@ struct RunningWidgetView: View {
     }
 
     @ViewBuilder
-    private var rectangular: some View {
+    private func rectangular(_ entry: RunningTimelineEntry) -> some View {
         if let top = entry.running.first {
             VStack(alignment: .leading, spacing: 1) {
                 HStack(spacing: 4) {
@@ -120,7 +141,7 @@ struct RunningWidgetView: View {
     }
 
     @ViewBuilder
-    private var inline: some View {
+    private func inline(_ entry: RunningTimelineEntry) -> some View {
         if let top = entry.running.first {
             Text("\(Image(systemName: "timer")) \(top.name) \(top.startedAt, style: .timer)")
         } else {
