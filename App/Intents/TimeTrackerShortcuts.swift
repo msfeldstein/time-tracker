@@ -9,7 +9,6 @@ struct TimeTrackerShortcuts: AppShortcutsProvider {
             phrases: [
                 "Log time in \(.applicationName)",
                 "Log by voice in \(.applicationName)",
-                "Open \(.applicationName) and listen",
                 "\(.applicationName) listen",
             ],
             shortTitle: "Log by Voice",
@@ -36,6 +35,16 @@ struct TimeTrackerShortcuts: AppShortcutsProvider {
             ],
             shortTitle: "Stop Activity",
             systemImageName: "stop.circle.fill"
+        )
+        AppShortcut(
+            intent: StopAllActivitiesIntent(),
+            phrases: [
+                "Stop everything in \(.applicationName)",
+                "Stop all timers in \(.applicationName)",
+                "I'm done for the day in \(.applicationName)",
+            ],
+            shortTitle: "Stop All",
+            systemImageName: "stop.fill"
         )
     }
 }

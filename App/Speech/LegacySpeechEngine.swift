@@ -13,11 +13,18 @@ final class LegacySpeechEngine: TranscriptionEngine, @unchecked Sendable {
     private var request: SFSpeechAudioBufferRecognitionRequest?
     private var task: SFSpeechRecognitionTask?
     private var isFinished = false
+    private let requestsAuthorization: Bool
+
+    init(requestsAuthorization: Bool = true) {
+        self.requestsAuthorization = requestsAuthorization
+    }
 
     func start(onText: @escaping @Sendable (String) -> Void) async throws {
-        let status = await withCheckedContinuation { (continuation: CheckedContinuation<SFSpeechRecognizerAuthorizationStatus, Never>) in
-            SFSpeechRecognizer.requestAuthorization { continuation.resume(returning: $0) }
-        }
+        let status = requestsAuthorization
+            ? await withCheckedContinuation { (continuation: CheckedContinuation<SFSpeechRecognizerAuthorizationStatus, Never>) in
+                SFSpeechRecognizer.requestAuthorization { continuation.resume(returning: $0) }
+            }
+            : SFSpeechRecognizer.authorizationStatus()
         guard status == .authorized else { throw SpeechCaptureError.speechDenied }
 
         guard let recognizer = SFSpeechRecognizer(locale: Locale.current) ?? SFSpeechRecognizer(locale: Locale(identifier: "en-US")),

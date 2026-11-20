@@ -1,6 +1,7 @@
 @preconcurrency import AVFoundation
 import Foundation
 import Observation
+import TimeTrackerCore
 
 /// Drives one listening session: permissions, engine fallback, live transcript, auto-finish on silence,
 /// and handing the final text to `EntryService`.
@@ -20,11 +21,25 @@ final class VoiceCaptureController {
     private(set) var transcript = ""
     private(set) var engineName = ""
 
-    /// Stop after this much quiet once she has said something.
-    var silenceAfterSpeech: TimeInterval = 1.6
-    /// Give up if nothing at all is heard for this long.
-    var silenceBeforeSpeech: TimeInterval = 8
-    var maximumDuration: TimeInterval = 45
+    /// When listening ends by itself (silence, time limit).
+    let policy: ListeningPolicy
+    /// False when running from a Lock Screen intent: iOS can't show permission prompts there,
+    /// so only already-granted permissions are used.
+    let allowsPermissionPrompts: Bool
+    let source: EntrySource
+    private let nothingHeardMessage: String
+
+    init(
+        policy: ListeningPolicy = .standard,
+        allowsPermissionPrompts: Bool = true,
+        source: EntrySource = .voice,
+        nothingHeardMessage: String = "I didn't catch that. Tap the mic and try again."
+    ) {
+        self.policy = policy
+        self.allowsPermissionPrompts = allowsPermissionPrompts
+        self.source = source
+        self.nothingHeardMessage = nothingHeardMessage
+    }
 
     private var engine: (any TranscriptionEngine)?
     private var listeningStartedAt = Date()
@@ -83,13 +98,16 @@ final class VoiceCaptureController {
     // MARK: - Private
 
     private func begin(session current: Int) async {
-        guard await AVAudioApplication.requestRecordPermission() else {
+        let micAllowed = allowsPermissionPrompts
+            ? await AVAudioApplication.requestRecordPermission()
+            : AVAudioApplication.shared.recordPermission == .granted
+        guard micAllowed else {
             fail(SpeechCaptureError.microphoneDenied.localizedDescription)
             return
         }
 
         var lastError: Error?
-        for candidate in TranscriptionEngines.candidates() {
+        for candidate in TranscriptionEngines.candidates(allowsPermissionPrompts: allowsPermissionPrompts) {
             guard current == session else { return }
             do {
                 try await candidate.start { [weak self] text in
@@ -138,11 +156,10 @@ final class VoiceCaptureController {
     }
 
     private func shouldAutoFinish(now: Date) -> Bool {
-        if now.timeIntervalSince(listeningStartedAt) >= maximumDuration { return true }
-        if transcript.isEmpty {
-            return now.timeIntervalSince(listeningStartedAt) >= silenceBeforeSpeech
-        }
-        return now.timeIntervalSince(lastTranscriptChange) >= silenceAfterSpeech
+        policy.shouldFinish(
+            startedAt: listeningStartedAt, lastTranscriptChange: lastTranscriptChange,
+            hasTranscript: !transcript.isEmpty, now: now
+        )
     }
 
     private func complete(session current: Int) async {
@@ -150,10 +167,10 @@ final class VoiceCaptureController {
         engine = nil
         let text = transcript
         guard !text.isEmpty else {
-            fail("I didn't catch that. Tap the mic and try again.")
+            fail(nothingHeardMessage)
             return
         }
-        let outcome = await EntryService.shared.capture(text: text, source: .voice)
+        let outcome = await EntryService.shared.capture(text: text, source: source)
         guard current == session else { return }
         phase = .done(outcome.message)
         scheduleReset(after: 4)

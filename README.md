@@ -17,12 +17,13 @@ A voice-first iPhone app for logging how long everyday tasks take. Tap the mic (
 3. [Install on Alexa's iPhone (free Apple ID)](#install-on-alexas-iphone-free-apple-id)
 4. [Every 7 days: re-sign the app](#every-7-days-re-sign-the-app)
 5. [Set up the Lock Screen widget, Control, Back Tap and Siri](#set-up-the-lock-screen-widget-control-back-tap-and-siri)
-6. [Turn on the AI features (optional)](#turn-on-the-ai-features-optional)
-7. [Background image](#background-image)
-8. [Free Apple ID limitations](#free-apple-id-limitations)
-9. [How it works](#how-it-works)
-10. [Development](#development)
-11. [Troubleshooting](#troubleshooting)
+6. [Lock Screen without unlocking](#lock-screen-without-unlocking)
+7. [Turn on the AI features (optional)](#turn-on-the-ai-features-optional)
+8. [Background image](#background-image)
+9. [Free Apple ID limitations](#free-apple-id-limitations)
+10. [How it works](#how-it-works)
+11. [Development](#development)
+12. [Troubleshooting](#troubleshooting)
 
 ---
 
@@ -35,9 +36,9 @@ A voice-first iPhone app for logging how long everyday tasks take. Tap the mic (
 | Deterministic parser for start, stop, stop-all and note phrases, with fuzzy matching against running activities | `Packages/TimeTrackerCore/` |
 | SwiftData store in the shared App Group container. Raw transcripts are saved first and re-processed on launch if interpretation didn't finish. | `Shared/SharedStore.swift`, `Shared/EntryService.swift` |
 | Live Activity / Dynamic Island with the name, a live elapsed timer, "+N more", and a **Stop** button (a `LiveActivityIntent`, so the app doesn't open) | `Widgets/TimerLiveActivity.swift`, `Shared/SharedIntents.swift` |
-| Lock Screen widgets (circular, rectangular, inline). Tapping one opens the app already listening. | `Widgets/RunningActivityWidget.swift` |
-| Control Center / Lock Screen control "Log Time" that opens the app already listening | `Widgets/LogTimeControl.swift` |
-| App Intents: Start Activity (Siri asks "What are you starting?"), Stop Activity, Log by Voice, plus Siri phrases | `App/Intents/`, `Shared/SharedIntents.swift` |
+| Lock Screen widgets (circular, rectangular, inline). Tapping one listens right there on the Lock Screen, no unlock needed. | `Widgets/RunningActivityWidget.swift` |
+| Control Center / Lock Screen control "Log Time" that listens without unlocking or opening the app | `Widgets/LogTimeControl.swift` |
+| App Intents: Start Activity (Siri asks "What are you starting?"), Stop Activity, Stop All, Log by Voice, plus Siri phrases. All run from the Lock Screen without unlocking; see [Lock Screen without unlocking](#lock-screen-without-unlocking). | `App/Intents/`, `Shared/SharedIntents.swift` |
 | A minimal main screen: no title or hint text, just the mic and any running timers (nothing shows when nothing is running). It can have an optional full-bleed background image (see [Background image](#background-image)). | `App/Views/HomeView.swift` |
 | Today's entries, in **Summary › Today**, with durations (running ones update live) and fixes: rename, change category, start and end times, mark as stopped, delete, add a forgotten entry. Anything over 3 hours is flagged "Forgot to stop?". | `App/Views/TodayEntriesSection.swift`, `App/Views/EditEntryView.swift` |
 | Unit tests for the parser, matcher and resolver, run with `swift test` or ⌘U | `Packages/TimeTrackerCore/Tests/` |
@@ -167,7 +168,7 @@ Don't change `BUNDLE_ID_PREFIX` once she has data. A new ID installs a separate,
 1. On the Lock Screen, touch and hold, then tap **Customize › Lock Screen**.
 2. Tap the widget row under the clock and choose **Time Tracker**.
 3. Add the **rectangular** widget (shows what's running and its timer, "+N more") and/or the **circular** one (mic icon and a count).
-4. Tap **Done**. Tapping the widget opens the app already listening.
+4. Tap **Done**. Tapping the widget starts listening right on the Lock Screen (a "Listening…" Live Activity appears); no Face ID needed.
 
 ### Control Center / Lock Screen button ("Log Time")
 
@@ -181,17 +182,54 @@ Back Tap can only run Shortcuts, so this takes two steps:
 1. Open the **Shortcuts** app, tap **+**, then **Add Action**, search for **Time Tracker**, and choose **Log by Voice**. Name the shortcut **Log Time** and tap **Done**.
 2. Go to **Settings › Accessibility › Touch › Back Tap › Double Tap** and choose **Log Time**.
 
-Double-tapping the back of the phone now opens Time Tracker listening. The iPhone 13 mini supports Back Tap. It works best when the phone is unlocked, because opening an app from a locked phone asks for Face ID first.
+Double-tapping the back of the phone now listens, even on the Lock Screen: a "Listening…" Live Activity appears, she says what she's doing, and it's logged without unlocking. If the app is already open, its own mic starts instead. The iPhone 13 mini supports Back Tap. (Back Tap works while the screen is on; it doesn't wake a dark screen.)
+
+To stop everything with Back Tap instead (for example on Triple Tap), make a second shortcut with **Stop All Activities**.
 
 ### Siri
 
 These work once the app has been opened at least once. Siri can take a minute or two to learn the phrases.
 
-- "Hey Siri, **log time in Time Tracker**": opens the app, already listening.
+- "Hey Siri, **log time in Time Tracker**": listens (without opening the app), then Siri says what was logged.
 - "Hey Siri, **start timing in Time Tracker**". Siri asks "What are you starting?"; she answers "dishes".
 - "Hey Siri, **stop timing in Time Tracker**": stops the most recent timer.
+- "Hey Siri, **stop everything in Time Tracker**": stops all timers.
 
-The same three actions appear in the Shortcuts app under Time Tracker. "Log Time" is also an option for the Action button on newer iPhones (the 13 mini doesn't have one).
+All of these work on a locked phone. The same four actions appear in the Shortcuts app under Time Tracker. "Log Time" is also an option for the Action button on newer iPhones (the 13 mini doesn't have one).
+
+---
+
+## Lock Screen without unlocking
+
+Alexa can start, stop and log time **without Face ID or the passcode**, from:
+
+- the Lock Screen widgets and the **Log Time** control (Lock Screen buttons or Control Center),
+- the **Stop** button on the Live Activity,
+- Siri ("log time", "start timing", "stop timing", "stop everything"),
+- a Back Tap Shortcut (Log by Voice, or Stop All Activities).
+
+None of them open the app.
+
+**How voice works on a locked phone.** `LogByVoiceIntent` is an `AudioRecordingIntent` (iOS 18+). iOS only lets it record while a Live Activity is on screen, so the Time Tracker Live Activity switches to **"Listening…"** with the words appearing as she speaks. It uses the same on-device speech engines and the same silence rules as the in-app mic (stops about 1.8 s after she finishes, gives up after 7 s of nothing, and stops after 25 s at most). Then it saves exactly like the app: the raw transcript first, then the interpretation. The Live Activity shows the result for a few seconds ("Got it · Started Dishes") and goes back to the running timer, or goes away if nothing is running. Siri also says the result.
+
+**When it can't listen**, it doesn't crash and doesn't open the app; it says what to do instead:
+
+| Situation | What she hears / sees |
+| --- | --- |
+| Microphone never allowed yet (iOS can't show the prompt on the Lock Screen) | "Open Time Tracker once and allow the microphone, then this works from the Lock Screen." |
+| Microphone turned off | Points to Settings › Apps › Time Tracker, or the app |
+| Live Activities turned off | Points to Settings › Apps › Time Tracker › Live Activities, or the app |
+| Speech model not downloaded / speech unavailable | Shown on the Live Activity; open the app once on Wi-Fi |
+| Nothing heard | "I didn't catch that. Try again." Nothing is saved, because nothing was said. |
+| The app is already open on screen | The in-app mic starts instead |
+
+**Storage while locked.** The SwiftData store's files are set to `completeUntilFirstUserAuthentication` (readable while locked, once she has unlocked once after a restart). This is set in code (`DataProtection` in `Shared/SharedStore.swift`) on every launch, because the `com.apple.developer.default-data-protection` entitlement is rejected by free Personal Team provisioning profiles. The Anthropic key in the Keychain uses `AfterFirstUnlockThisDeviceOnly`; keys saved by older builds are migrated when the app opens. If AI work can't run while locked, it simply waits in the store and retries later, as it always has.
+
+**Right after a restart**, before she has unlocked once, iOS keeps all app data encrypted and nothing can be logged. Unlock once and everything works from the Lock Screen again.
+
+### Security trade-off
+
+Because these actions skip Face ID, **anyone holding her phone can start, stop and log time, and can see what's running** on the Lock Screen widget and Live Activity. They can't open the app, read the history or the summaries, or see or change the API key; those still need an unlock. Anything logged this way is saved with its transcript and can be fixed or deleted in **Summary › Today**. If that's not acceptable, remove the widget and the control from the Lock Screen and don't set up Back Tap. (Siri on the Lock Screen can be turned off in **Settings › Siri › Allow Siri When Locked**.)
 
 ---
 
@@ -244,7 +282,9 @@ Researched against Apple's [Supported capabilities (iOS)](https://developer.appl
 | Widgets / Lock Screen widgets / Controls | ✅ No capability needed | Used. |
 | Live Activities | ✅ No entitlement needed (`NSSupportsLiveActivities`) | Started and updated **locally only** with `pushType: nil`. Requesting a push token makes `Activity.request` fail on Personal Team builds. The timer uses `Text(date, style: .timer)`, which updates itself, so no pushes are needed. |
 | App Intents / App Shortcuts / Siri phrases | ✅ No entitlement needed | Used. The **Siri capability (SiriKit) is *not* available to free accounts**, and it isn't needed: Apple only requires it for Intents extensions handling non-shortcut Siri requests. The project deliberately doesn't add it, because adding it would break free signing. |
-| Keychain | ✅ | Stores the optional Anthropic key (device-only, not synced). |
+| Keychain | ✅ | Stores the optional Anthropic key (device-only, not synced, readable after first unlock). |
+| Data Protection entitlement (`default-data-protection`) | ❌ Profile rejects it | Not used. The store's protection class is set on the files in code instead (see [Lock Screen without unlocking](#lock-screen-without-unlocking)). |
+| Background audio (`UIBackgroundModes: audio`) | ✅ Info.plist only, no entitlement | Lets the Lock Screen "Log by Voice" keep recording while the app is in the background. |
 | Outgoing network requests (Anthropic API) | ✅ No capability needed | The AI layer adds **no entitlements**. Retries happen while the app is open or when the network returns; there's no background fetch, which would need a Background Modes capability. |
 | Push notifications | ❌ | Not used. As a result, Live Activities can't be started or updated remotely, and a Live Activity can't refresh while the app is idle. That isn't needed here. |
 | iCloud / CloudKit | ❌ | Not used. Data lives only on this phone, with no sync between devices. The phone's normal backup should include it, but that hasn't been verified. |
@@ -279,7 +319,7 @@ EntryService.capture(text)
 
 - **Storage.** `TimeTracker.store` lives in the App Group container and both the app and widget open it. Every transcript becomes a `CaptureRecord` before parsing. If the app dies between steps 1 and 4, `reprocessPendingCaptures()` finishes the job on next launch using the original timestamp. Text the parser can't understand becomes a note `TimeEntry`, so nothing is discarded.
 - **One Live Activity** shows the most recently started timer plus "+N more". Its Stop button runs `StopEntryIntent` (a `LiveActivityIntent`) in the app process without opening the app, then the activity switches to the next timer or ends.
-- **"Open and listen" entry points** use `LogByVoiceIntent` (`openAppWhenRun`) or the `timetracker://listen` URL (widgets). `ListenRequest` hands the request to the UI on both cold and warm launches.
+- **Voice entry points** (widget, control, Siri, Back Tap) all run `LogByVoiceIntent`, declared in `Shared/SharedIntents.swift` as an `AudioRecordingIntent` + `LiveActivityIntent`. Its `perform()` is defined per target: the app's (`App/Intents/LogByVoiceIntent+Perform.swift`) drives `LockedVoiceCapture`, which runs a `VoiceCaptureController` with Lock Screen limits and no permission prompts and mirrors it onto the Live Activity's `voice` state; the widget extension's is a stub that's never called. If the app is on screen, it hands off to the in-app mic through `ListenRequest`. The `timetracker://listen` URL still opens the app listening.
 - **AI layer.** The platform-independent part lives in `TimeTrackerCore/LLM`:
   - `AnthropicClient` builds Messages API requests and maps errors (401: bad key; 429, 5xx, 529 and offline: retry later; refusal and truncation are handled).
   - `LLMPrompts` builds the prompts and strict schemas.
@@ -325,6 +365,8 @@ Packages/TimeTrackerCore/   Platform-independent parser, matcher, resolver, summ
 | Widget always says "Tap to log" while timers are running | The App Group isn't active. Check Settings › Storage in the app, and that both targets use the same team and the same `APP_GROUP_ID`. |
 | "On-device speech recognition isn't available" | Go to **Settings › General › Keyboard** and make sure Dictation is on for her language, then let the phone download the language on Wi-Fi. |
 | No Live Activity | **Settings › Time Tracker › Live Activities** must be on. It appears when a timer starts or when the app is opened. |
+| The Lock Screen widget or Log Time says to open the app | Open Time Tracker once while unlocked and allow the microphone (and Speech Recognition if asked). iOS can't ask for permission on the Lock Screen. |
+| Nothing works right after restarting the phone | Unlock once. Until then iOS keeps the app's data encrypted. |
 | Siri doesn't know the phrases | Open the app once, wait a minute, and use the exact phrases above (they must include "Time Tracker"). |
 | "That key didn't work" after Test key | Make a fresh key at console.anthropic.com and check that the account has credit. |
 | AI status says it will retry | No internet, or Anthropic is busy. Nothing is lost: pending work runs on the next try or when the connection comes back. |

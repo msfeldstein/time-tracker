@@ -59,6 +59,9 @@ struct RootView: View {
                 Task {
                     if !didLaunch {
                         didLaunch = true
+                        // The app is on screen, so the phone is unlocked: a good moment to make
+                        // sure Lock Screen intents can read the Keychain and the store later.
+                        KeychainStore.migrateAccessibility()
                         await EntryService.shared.reprocessPendingCaptures()
                         #if DEBUG
                         if ProcessInfo.processInfo.arguments.contains("-TTDemoData") {

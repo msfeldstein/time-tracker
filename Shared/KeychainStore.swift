@@ -44,6 +44,20 @@ enum KeychainStore {
         }
     }
 
+    /// Lock Screen intents (and the AI worker running in the background) read the key while the
+    /// phone is locked, so every item must be `AfterFirstUnlockThisDeviceOnly`. Items saved by an
+    /// older build with a stricter class are moved over; run while unlocked (app launch).
+    static func migrateAccessibility() {
+        let query: [String: Any] = [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrService as String: service,
+        ]
+        let update: [String: Any] = [
+            kSecAttrAccessible as String: kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly,
+        ]
+        SecItemUpdate(query as CFDictionary, update as CFDictionary)
+    }
+
     static func delete(_ account: String) {
         let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,

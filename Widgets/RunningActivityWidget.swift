@@ -32,18 +32,21 @@ struct RunningProvider: TimelineProvider {
     }
 }
 
-/// Lock Screen widget. Tapping it opens the app straight into listening mode.
+/// Lock Screen widget. Tapping it runs `LogByVoiceIntent`, which listens from the Lock Screen
+/// without unlocking or opening the app.
 struct RunningActivityWidget: Widget {
     let kind = "RunningActivityWidget"
 
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: kind, provider: RunningProvider()) { entry in
-            RunningWidgetView(entry: entry)
-                .containerBackground(for: .widget) { Color.clear }
-                .widgetURL(AppConfig.listenURL)
+            Button(intent: LogByVoiceIntent()) {
+                RunningWidgetView(entry: entry)
+            }
+            .buttonStyle(.plain)
+            .containerBackground(for: .widget) { Color.clear }
         }
         .configurationDisplayName("Time Tracker")
-        .description("See what's running. Tap to log by voice.")
+        .description("See what's running. Tap to log by voice, no unlock needed.")
         .supportedFamilies([.accessoryCircular, .accessoryRectangular, .accessoryInline])
     }
 }

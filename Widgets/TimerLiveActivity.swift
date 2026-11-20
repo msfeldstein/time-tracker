@@ -8,12 +8,21 @@ import WidgetKit
 struct TimerLiveActivity: Widget {
     var body: some WidgetConfiguration {
         ActivityConfiguration(for: TimerActivityAttributes.self) { context in
-            LockScreenLiveActivityView(state: context.state)
+            Group {
+                if let voice = context.state.voice {
+                    VoiceLiveActivityView(voice: voice)
+                } else {
+                    LockScreenLiveActivityView(state: context.state)
+                }
+            }
                 .activityBackgroundTint(Color.black.opacity(0.55))
                 .activitySystemActionForegroundColor(.white)
                 .widgetURL(AppConfig.homeURL)
         } dynamicIsland: { context in
             let state = context.state
+            if let voice = state.voice {
+                return Self.voiceIsland(voice)
+            }
             return DynamicIsland {
                 DynamicIslandExpandedRegion(.leading) {
                     Label {
@@ -57,6 +66,95 @@ struct TimerLiveActivity: Widget {
                     .foregroundStyle(.orange)
             }
             .widgetURL(AppConfig.homeURL)
+        }
+    }
+
+    private static func voiceIsland(_ voice: TimerActivityAttributes.VoiceStatus) -> DynamicIsland {
+        DynamicIsland {
+            DynamicIslandExpandedRegion(.leading) {
+                Image(systemName: voice.symbol)
+                    .font(.title2)
+                    .foregroundStyle(voice.tint)
+            }
+            DynamicIslandExpandedRegion(.center) {
+                Text(voice.title)
+                    .font(.headline)
+            }
+            DynamicIslandExpandedRegion(.bottom) {
+                if !voice.text.isEmpty {
+                    Text(voice.text)
+                        .font(.subheadline)
+                        .lineLimit(2)
+                }
+            }
+        } compactLeading: {
+            Image(systemName: voice.symbol)
+                .foregroundStyle(voice.tint)
+        } compactTrailing: {
+            Text(voice.title)
+                .font(.caption2)
+                .lineLimit(1)
+                .frame(maxWidth: 72)
+        } minimal: {
+            Image(systemName: voice.symbol)
+                .foregroundStyle(voice.tint)
+        }
+        .widgetURL(AppConfig.homeURL)
+    }
+}
+
+/// "Listening…" while she logs by voice from the Lock Screen, then what happened.
+private struct VoiceLiveActivityView: View {
+    let voice: TimerActivityAttributes.VoiceStatus
+
+    var body: some View {
+        HStack(spacing: 14) {
+            Image(systemName: voice.symbol)
+                .font(.system(size: 30, weight: .semibold))
+                .foregroundStyle(voice.tint)
+                .symbolEffect(.pulse, isActive: voice.phase == .listening)
+                .frame(width: 44)
+            VStack(alignment: .leading, spacing: 2) {
+                Text(voice.title)
+                    .font(.title3.weight(.semibold))
+                if !voice.text.isEmpty {
+                    Text(voice.text)
+                        .font(.body)
+                        .lineLimit(3)
+                        .foregroundStyle(voice.phase == .listening ? .secondary : .primary)
+                }
+            }
+            Spacer(minLength: 0)
+        }
+        .foregroundStyle(.white)
+        .padding(16)
+    }
+}
+
+private extension TimerActivityAttributes.VoiceStatus {
+    var title: String {
+        switch phase {
+        case .listening: "Listening…"
+        case .saving: "Saving…"
+        case .done: "Got it"
+        case .failed: "Didn't log"
+        }
+    }
+
+    var symbol: String {
+        switch phase {
+        case .listening: "mic.fill"
+        case .saving: "waveform"
+        case .done: "checkmark.circle.fill"
+        case .failed: "exclamationmark.circle.fill"
+        }
+    }
+
+    var tint: Color {
+        switch phase {
+        case .listening, .saving: .orange
+        case .done: .green
+        case .failed: .yellow
         }
     }
 }

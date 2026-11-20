@@ -37,8 +37,10 @@ enum SpeechCaptureError: LocalizedError {
 
 enum TranscriptionEngines {
     /// Preferred engine first. Both are on-device only; audio never leaves the phone.
-    static func candidates() -> [any TranscriptionEngine] {
-        [SpeechAnalyzerEngine(), LegacySpeechEngine()]
+    /// With `allowsPermissionPrompts` false (Lock Screen intents), the fallback engine only runs if
+    /// Speech Recognition was already allowed; it never shows a prompt.
+    static func candidates(allowsPermissionPrompts: Bool = true) -> [any TranscriptionEngine] {
+        [SpeechAnalyzerEngine(), LegacySpeechEngine(requestsAuthorization: allowsPermissionPrompts)]
     }
 }
 

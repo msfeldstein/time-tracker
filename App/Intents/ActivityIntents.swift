@@ -4,10 +4,12 @@ import Foundation
 /// "Hey Siri, start an activity in Time Tracker" -> "What are you starting?" -> "Dishes".
 ///
 /// Conforms to LiveActivityIntent so it runs in the app process and may start the
-/// Live Activity even though the app stays in the background.
+/// Live Activity even though the app stays in the background. Runs from the Lock Screen without
+/// unlocking (`.alwaysAllowed`).
 struct StartActivityIntent: LiveActivityIntent {
     static let title: LocalizedStringResource = "Start Activity"
     static let description = IntentDescription("Starts timing an activity, like dishes or laundry.")
+    static let authenticationPolicy: IntentAuthenticationPolicy = .alwaysAllowed
 
     @Parameter(title: "Activity", requestValueDialog: IntentDialog("What are you starting?"))
     var activity: String
@@ -33,6 +35,7 @@ struct StartActivityIntent: LiveActivityIntent {
 struct StopActivityIntent: LiveActivityIntent {
     static let title: LocalizedStringResource = "Stop Activity"
     static let description = IntentDescription("Stops an activity. Leave it empty to stop the one you started most recently.")
+    static let authenticationPolicy: IntentAuthenticationPolicy = .alwaysAllowed
 
     @Parameter(title: "Activity")
     var activity: String?

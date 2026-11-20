@@ -2,8 +2,9 @@ import AppIntents
 import SwiftUI
 import WidgetKit
 
-/// Control Center / Lock Screen control (iOS 18+) that opens the app in listening mode.
-/// Also assignable to the Action button on newer iPhones.
+/// Control Center / Lock Screen control (iOS 18+) that listens and logs by voice without
+/// unlocking or opening the app (`LogByVoiceIntent`, a "Listening…" Live Activity shows while
+/// it records). Also assignable to the Action button on newer iPhones.
 struct LogTimeControl: ControlWidget {
     static let kind = "LogTimeControl"
 
@@ -14,6 +15,6 @@ struct LogTimeControl: ControlWidget {
             }
         }
         .displayName("Log Time")
-        .description("Open Time Tracker and start listening.")
+        .description("Say what you're starting or finishing. Works without unlocking.")
     }
 }

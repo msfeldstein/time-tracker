@@ -87,6 +87,11 @@ final class EntryService {
         return await record(text: "stop \(trimmed)", commands: commands, source: source)
     }
 
+    /// "Stop all activities" from Siri, Shortcuts or a Back Tap.
+    func stopAllFromIntent(source: EntrySource) async -> CaptureOutcome {
+        await record(text: "stop everything", commands: [.stopAll], source: source)
+    }
+
     private func record(text: String, commands: [ParsedCommand], source: EntrySource) async -> CaptureOutcome {
         let record = CaptureRecord(text: text, capturedAt: Date(), source: source)
         context.insert(record)
