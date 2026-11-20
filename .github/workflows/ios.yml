@@ -1,0 +1,153 @@
+name: iOS build and tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  core-tests:
+    name: Parser tests (Swift package)
+    runs-on: macos-26
+    steps:
+      - uses: actions/checkout@v4
+      - name: Swift version
+        run: swift --version
+      - name: No Anthropic key in the repository
+        run: sh scripts/check_secrets.sh
+      - name: Run TimeTrackerCore tests
+        working-directory: Packages/TimeTrackerCore
+        run: swift test
+
+  build:
+    name: Build app + widget (iOS Simulator) and run unit tests
+    runs-on: macos-26
+    steps:
+      - uses: actions/checkout@v4
+      - name: Xcode version
+        run: |
+          xcodebuild -version
+          ls -d /Applications/Xcode*.app
+      - name: Check the project structure and that xcodebuild can read it
+        run: |
+          python3 scripts/check_xcodeproj.py TimeTracker.xcodeproj
+          xcodebuild -list -project TimeTracker.xcodeproj
+          # Also try the newest installed Xcode (e.g. 27.x) if the runner has it.
+          NEWEST=$(ls -d /Applications/Xcode_*.app | sort -V | tail -1)
+          echo "Newest Xcode on runner: $NEWEST"
+          DEVELOPER_DIR="$NEWEST/Contents/Developer" xcodebuild -version
+          DEVELOPER_DIR="$NEWEST/Contents/Developer" xcodebuild -list -project TimeTracker.xcodeproj
+      - name: Build for iOS Simulator (no signing)
+        run: |
+          set -o pipefail
+          xcodebuild build \
+            -project TimeTracker.xcodeproj \
+            -scheme TimeTracker \
+            -destination 'generic/platform=iOS Simulator' \
+            -derivedDataPath build/DerivedData \
+            CODE_SIGNING_ALLOWED=NO \
+            | tee build.log | grep -E "error:|warning:|BUILD (SUCCEEDED|FAILED)" || true
+          grep -q "BUILD SUCCEEDED" build.log
+      - name: Default build embeds no Anthropic key
+        run: |
+          APP=build/DerivedData/Build/Products/Debug-iphonesimulator/TimeTracker.app
+          test -z "$(/usr/libexec/PlistBuddy -c 'Print TTBundledAnthropicKey' "$APP/Info.plist")"
+      - name: Pick an iPhone simulator
+        run: |
+          UDID=$(xcrun simctl list devices available -j | python3 -c '
+          import json, sys
+          data = json.load(sys.stdin)["devices"]
+          ios = sorted((k for k in data if "iOS" in k), reverse=True)
+          for runtime in ios:
+              for d in data[runtime]:
+                  if d["name"].startswith("iPhone"):
+                      print(d["udid"]); sys.exit()
+          ')
+          echo "Using simulator $UDID for tests"
+          echo "SIM_UDID=$UDID" >> "$GITHUB_ENV"
+          # Screenshots on Alexa's device size when the runner has that device type.
+          RUNTIME=$(xcrun simctl list runtimes -j | python3 -c '
+          import json, sys
+          rs = [r for r in json.load(sys.stdin)["runtimes"] if r["platform"] == "iOS" and r["isAvailable"]]
+          print(sorted(rs, key=lambda r: r["version"])[-1]["identifier"] if rs else "")
+          ')
+          MINI=$(xcrun simctl create "iPhone 13 mini" com.apple.CoreSimulator.SimDeviceType.iPhone-13-mini "$RUNTIME" 2>/dev/null || echo "$UDID")
+          echo "Using simulator $MINI for screenshots"
+          echo "SHOT_UDID=$MINI" >> "$GITHUB_ENV"
+      - name: Launch the app and take screenshots
+        run: |
+          mkdir -p screenshots
+          xcrun simctl boot "$SHOT_UDID" || true
+          xcrun simctl bootstatus "$SHOT_UDID" -b
+          APP=build/DerivedData/Build/Products/Debug-iphonesimulator/TimeTracker.app
+          BUNDLE_ID=$(/usr/libexec/PlistBuddy -c "Print CFBundleIdentifier" "$APP/Info.plist")
+          xcrun simctl install "$SHOT_UDID" "$APP"
+          shot() { sleep "$2"; xcrun simctl io "$SHOT_UDID" screenshot "screenshots/$1.png"; }
+          xcrun simctl launch "$SHOT_UDID" "$BUNDLE_ID" -TTDemoData
+          shot 1-home 12
+          xcrun simctl terminate "$SHOT_UDID" "$BUNDLE_ID" || true
+          xcrun simctl launch "$SHOT_UDID" "$BUNDLE_ID" -TTOpenToday
+          shot 2-today 12
+          xcrun simctl terminate "$SHOT_UDID" "$BUNDLE_ID" || true
+          xcrun simctl launch "$SHOT_UDID" "$BUNDLE_ID" -TTOpenSettings
+          shot 3-settings 10
+          xcrun simctl terminate "$SHOT_UDID" "$BUNDLE_ID" || true
+          xcrun simctl launch "$SHOT_UDID" "$BUNDLE_ID" -TTOpenSummary
+          shot 5-summary 12
+          xcrun simctl terminate "$SHOT_UDID" "$BUNDLE_ID" || true
+          xcrun simctl openurl "$SHOT_UDID" timetracker://listen
+          shot 4-listen-url 12
+          xcrun simctl spawn "$SHOT_UDID" log show --last 10m --predicate 'process == "TimeTracker"' --style compact > screenshots/app-log.txt || true
+          cp ~/Library/Logs/DiagnosticReports/TimeTracker* screenshots/ 2>/dev/null || true
+          xcrun simctl shutdown "$SHOT_UDID" || true
+      - name: Run unit tests on a simulator
+        run: |
+          set -o pipefail
+          UDID="$SIM_UDID"
+          xcodebuild test \
+            -project TimeTracker.xcodeproj \
+            -scheme TimeTracker \
+            -destination "id=$UDID" \
+            CODE_SIGNING_ALLOWED=NO \
+            | tee test.log | grep -E "error:|Test Suite|Executed|TEST (SUCCEEDED|FAILED)" || true
+          grep -q "TEST SUCCEEDED" test.log
+      - name: Built-in key passes through Local.xcconfig intact (fake key)
+        run: |
+          set -o pipefail
+          FAKE="sk-ant-""fake_key-ci_01-Ab"
+          printf 'ANTHROPIC_API_KEY = %s\n' "$FAKE" > Config/Local.xcconfig
+          xcodebuild build \
+            -project TimeTracker.xcodeproj \
+            -scheme TimeTracker \
+            -destination 'generic/platform=iOS Simulator' \
+            -derivedDataPath build/DerivedData \
+            CODE_SIGNING_ALLOWED=NO \
+            -quiet
+          APP=build/DerivedData/Build/Products/Debug-iphonesimulator/TimeTracker.app
+          GOT=$(/usr/libexec/PlistBuddy -c 'Print TTBundledAnthropicKey' "$APP/Info.plist")
+          rm Config/Local.xcconfig
+          [ "$GOT" = "$FAKE" ] || { echo "Expected the fake key in the app Info.plist, got '$GOT'"; exit 1; }
+          if /usr/libexec/PlistBuddy -c 'Print TTBundledAnthropicKey' "$APP/PlugIns/TimeTrackerWidgets.appex/Info.plist" 2>/dev/null; then
+            echo "The widget extension must not embed the key"; exit 1
+          fi
+          echo "Built-in key reached the app Info.plist unchanged and is absent from the widget."
+      - name: Check the committed project matches project.yml
+        run: |
+          ./scripts/generate-project.sh
+          git diff --exit-code -- TimeTracker.xcodeproj || {
+            echo "::warning::TimeTracker.xcodeproj differs from 'xcodegen generate' output; regenerate and commit."
+          }
+      - name: Upload logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: xcodebuild-logs
+          path: |
+            build.log
+            test.log
+            screenshots/
+          if-no-files-found: ignore

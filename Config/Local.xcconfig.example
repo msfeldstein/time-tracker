@@ -1,0 +1,7 @@
+// Copy to Config/Local.xcconfig (git-ignored) and fill in. Values here override Base.xcconfig.
+BUNDLE_ID_PREFIX = com.yourname.timetracker
+DEVELOPMENT_TEAM = ABCDE12345
+
+// Optional: built-in Anthropic key (from console.anthropic.com). No quotes, nothing after it on the line.
+// This file must stay git-ignored; run scripts/check_secrets.sh before committing.
+ANTHROPIC_API_KEY =

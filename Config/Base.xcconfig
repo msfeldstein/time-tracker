@@ -1,0 +1,29 @@
+// The one place to change identifiers and signing for Time Tracker.
+//
+// Bundle IDs and App Group IDs are globally unique across all Apple accounts, so
+// change BUNDLE_ID_PREFIX to something only you would use, e.g. com.yourname.timetracker.
+// The widget, test bundle and App Group IDs are all derived from it.
+//
+// Prefer putting personal values in Config/Local.xcconfig (git-ignored), which overrides
+// anything here. See README.md, "Install on Alexa's iPhone".
+
+BUNDLE_ID_PREFIX = com.example.timetracker
+
+// Your Personal Team ID (10 characters, shown in Xcode > Settings > Accounts).
+// Can be left empty and picked in Xcode's Signing & Capabilities tab instead.
+DEVELOPMENT_TEAM =
+
+APP_GROUP_ID = group.$(BUNDLE_ID_PREFIX)
+
+// Optional built-in Anthropic API key, so the AI features work without pasting a key on the phone.
+// NEVER set it here: this file is committed and the repository is public. Set it only in the
+// git-ignored Config/Local.xcconfig. A key entered in the app's Settings overrides it.
+// Note: xcconfig treats "//" as the start of a comment and "$(...)" as a variable reference, so a
+// value containing either would be cut short or expanded. Anthropic keys only use letters,
+// digits, "-" and "_", which pass through unchanged. Don't wrap the value in quotes.
+ANTHROPIC_API_KEY =
+
+MARKETING_VERSION = 1.0
+CURRENT_PROJECT_VERSION = 1
+
+#include? "Local.xcconfig"
